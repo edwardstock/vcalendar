@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:paddingBottom="8dp"
+    >
+
+    <TextView
+        android:id="@+id/monthName"
+        style="@style/VCalendar.Month"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        tools:text="January"
+        />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:orientation="horizontal"
+        >
+
+        <TextView
+            style="@style/VCalendar.Weekday"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="@string/weekday_mon"
+            />
+
+        <TextView
+            style="@style/VCalendar.Weekday"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="@string/weekday_tue"
+            />
+
+        <TextView
+            style="@style/VCalendar.Weekday"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="@string/weekday_wed"
+            />
+
+        <TextView
+            style="@style/VCalendar.Weekday"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="@string/weekday_thu"
+            />
+
+        <TextView
+            style="@style/VCalendar.Weekday"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="@string/weekday_fri"
+            />
+
+        <TextView
+            style="@style/VCalendar.Weekday"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="@string/weekday_sat"
+            />
+
+        <TextView
+            style="@style/VCalendar.Weekday"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="@string/weekday_sun"
+            />
+    </LinearLayout>
+
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/list"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="8dp"
+        android:textAlignment="center"
+        tools:layoutManager="GridLayoutManager"
+        tools:listitem="@layout/item_day"
+        tools:spanCount="7"
+        />
+
+</LinearLayout>

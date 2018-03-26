@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="VCalendar"></style>
+
+    <style name="VCalendar.Month">
+        <item name="android:textColor">@android:color/black</item>
+        <item name="android:fontFamily">@string/font_family_medium</item>
+        <item name="android:textSize">@dimen/text_size_14</item>
+        <item name="android:layout_gravity">center_horizontal</item>
+        <item name="android:textAlignment">center</item>
+    </style>
+
+    <style name="VCalendar.Weekday">
+        <item name="android:textColor">@color/vcalendarTextColorHalf</item>
+        <item name="android:fontFamily">@string/font_family_medium</item>
+        <item name="android:textSize">@dimen/text_size_12</item>
+        <item name="android:textAlignment">center</item>
+    </style>
+
+    <style name="VCalendar.Day">
+        <item name="android:textColor">@color/vcalendarTextColorBlack</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:textSize">@dimen/text_size_12</item>
+        <item name="android:textAlignment">center</item>
+        <item name="android:gravity">center</item>
+        <item name="android:layout_gravity">center</item>
+    </style>
+</resources>

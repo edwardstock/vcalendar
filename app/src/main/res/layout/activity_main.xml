@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".MainActivity">
+
+    <ru.esdev.vcalendar.VCalendar
+        android:id="@+id/cal"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:selectionBeginBackground="@drawable/bg_calendar_day_selection_begin"
+        app:selectionEndBackground="@drawable/bg_calendar_day_selection_end"
+        app:selectionMiddleBackground="@drawable/bg_calendar_day_selection_middle"
+        app:selectionSingleBackground="@drawable/bg_calendar_day_selection_single"
+        app:selectionMode="range"
+        app:orientation="vertical"
+        >
+
+    </ru.esdev.vcalendar.VCalendar>
+</FrameLayout>
