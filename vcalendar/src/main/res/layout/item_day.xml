@@ -1,12 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ru.esdev.vcalendar.widgets.SquareTextView
+<com.edwardstock.vcalendar.widgets.SquareTextView
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/dayNum"
     style="@style/VCalendar.Day"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
     tools:text="31"
-    android:textColor="#70000000"
     />
-

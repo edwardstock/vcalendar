@@ -5,23 +5,24 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical"
-    android:paddingBottom="8dp"
+    android:paddingBottom="@dimen/vcal_margin_edge_half"
     >
 
     <TextView
         android:id="@+id/monthName"
-        style="@style/VCalendar.Month"
+        style="@style/VCalendar.MonthName"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
+        android:layout_marginTop="@dimen/vcal_margin_edge"
         tools:text="January"
         />
 
     <LinearLayout
+        style="@style/VCalendar.MonthLegend"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
         android:orientation="horizontal"
+
         >
 
         <TextView
@@ -86,7 +87,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
-        android:layout_marginTop="8dp"
+        android:layout_marginTop="@dimen/vcal_margin_edge"
         android:textAlignment="center"
         tools:layoutManager="GridLayoutManager"
         tools:listitem="@layout/item_day"

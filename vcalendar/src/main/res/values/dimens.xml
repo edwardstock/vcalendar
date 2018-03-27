@@ -1,15 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <dimen name="text_size_10">10sp</dimen>
-    <dimen name="text_size_11">11sp</dimen>
-    <dimen name="text_size_12">12sp</dimen>
-    <dimen name="text_size_14">14sp</dimen>
-    <dimen name="text_size_14_unified">14dp</dimen>
-    <dimen name="text_size_default">16sp</dimen>
-    <dimen name="text_size_18">18sp</dimen>
-    <dimen name="text_size_20">20sp</dimen>
-    <dimen name="text_size_22">22sp</dimen>
-    <dimen name="text_size_24">24sp</dimen>
-    <dimen name="text_size_26">26sp</dimen>
-    <dimen name="text_size_28">28sp</dimen>
+    <dimen name="vcal_text_size_12">12sp</dimen>
+    <dimen name="vcal_text_size_14">14sp</dimen>
+    <dimen name="vcal_day_height">34dp</dimen>
+    <dimen name="vcal_margin_edge">16dp</dimen>
+    <dimen name="vcal_margin_edge_half">8dp</dimen>
 </resources>

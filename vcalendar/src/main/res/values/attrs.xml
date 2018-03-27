@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <declare-styleable name="VCalendar">
+        <!-- 2018-01 -->
+        <attr name="initialDate" format="string"/>
         <attr name="selectionBeginBackground" format="reference"/>
         <attr name="selectionMiddleBackground" format="reference"/>
         <attr name="selectionEndBackground" format="reference"/>

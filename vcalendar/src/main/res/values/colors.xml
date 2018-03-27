@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="vcalendarTextColorHalf">#80000000</color>
-    <color name="vcalendarTextColorBlack">@android:color/black</color>
+    <color name="vcal_text_color_half">#80000000</color>
+    <color name="vcal_text_color_dark">@android:color/black</color>
 </resources>

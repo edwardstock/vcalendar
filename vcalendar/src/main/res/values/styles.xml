@@ -2,27 +2,39 @@
 <resources>
     <style name="VCalendar"></style>
 
-    <style name="VCalendar.Month">
+    <style name="VCalendar.MonthName">
         <item name="android:textColor">@android:color/black</item>
         <item name="android:fontFamily">@string/font_family_medium</item>
-        <item name="android:textSize">@dimen/text_size_14</item>
+        <item name="android:textSize">@dimen/vcal_text_size_14</item>
         <item name="android:layout_gravity">center_horizontal</item>
         <item name="android:textAlignment">center</item>
+        <item name="android:gravity">center</item>
+    </style>
+
+    <style name="VCalendar.MonthLegend">
+        <item name="android:layout_gravity">center</item>
+        <item name="android:gravity">center</item>
+        <item name="android:textAlignment">center</item>
+        <item name="android:layout_marginTop">@dimen/vcal_margin_edge</item>
     </style>
 
     <style name="VCalendar.Weekday">
-        <item name="android:textColor">@color/vcalendarTextColorHalf</item>
+        <item name="android:textColor">@color/vcal_text_color_half</item>
         <item name="android:fontFamily">@string/font_family_medium</item>
-        <item name="android:textSize">@dimen/text_size_12</item>
+        <item name="android:textSize">@dimen/vcal_text_size_12</item>
         <item name="android:textAlignment">center</item>
+        <item name="android:gravity">center</item>
     </style>
 
+
     <style name="VCalendar.Day">
-        <item name="android:textColor">@color/vcalendarTextColorBlack</item>
+        <item name="android:textColor">@color/vcal_text_color_dark</item>
         <item name="android:textStyle">bold</item>
-        <item name="android:textSize">@dimen/text_size_12</item>
+        <item name="android:textSize">@dimen/vcal_text_size_12</item>
         <item name="android:textAlignment">center</item>
         <item name="android:gravity">center</item>
         <item name="android:layout_gravity">center</item>
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">@dimen/vcal_day_height</item>
     </style>
 </resources>
