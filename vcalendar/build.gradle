@@ -1,4 +1,8 @@
-apply plugin: 'com.android.library'
+plugins {
+    id 'com.android.library'
+    id 'maven-publish'
+    id "com.jfrog.bintray" version "1.7.3"
+}
 
 android {
     compileSdkVersion 27
@@ -7,7 +11,7 @@ android {
         minSdkVersion 18
         targetSdkVersion 27
         versionCode 1
-        versionName "1.0"
+        versionName "1.0.0"
 
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
 
@@ -35,7 +39,7 @@ dependencies {
     implementation "com.android.support:recyclerview-v7:${libSupport}"
     implementation 'com.jakewharton.timber:timber:4.5.1'
     implementation 'net.danlew:android.joda:2.9.9.1'
-    implementation ('com.fatboyindustrial.gson-jodatime-serialisers:gson-jodatime-serialisers:1.6.0') {
+    implementation('com.fatboyindustrial.gson-jodatime-serialisers:gson-jodatime-serialisers:1.6.0') {
         exclude group: 'joda-time'
         exclude group: 'com.google.code.gson'
     }
@@ -43,4 +47,74 @@ dependencies {
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'com.android.support.test:runner:1.0.1'
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.1'
+}
+
+if (hasProperty("bintrayApiKey") && hasProperty("bintrayUser")) {
+    task androidJavadocs(type: Javadoc) {
+        source = android.sourceSets.main.java.source
+        classpath += project.files(android.getBootClasspath().join(File.pathSeparator))
+    }
+
+    task androidJavadocsJar(type: Jar, dependsOn: androidJavadocs) {
+        classifier = 'javadoc'
+        from androidJavadocs.destinationDir
+    }
+
+    task androidSourcesJar(type: Jar) {
+        classifier = 'sources'
+        from android.sourceSets.main.java.source
+    }
+
+    publishing {
+        publications {
+            vcalendar(MavenPublication) {
+                groupId POM_GROUP
+                artifactId 'vcalendar'
+
+                artifact("$buildDir/outputs/aar/vcalendar-release.aar")
+                version android.defaultConfig.versionName
+
+                pom.withXml {
+                    def dependenciesNode = asNode().appendNode('dependencies')
+
+                    // Iterate over the implementation dependencies (we don't want the test ones), adding a <dependency> node for each
+                    configurations.implementation.allDependencies.each {
+                        // Ensure dependencies such as fileTree are not included in the pom.
+                        if (it.name != 'unspecified') {
+                            def dependencyNode = dependenciesNode.appendNode('dependency')
+                            dependencyNode.appendNode('groupId', it.group)
+                            dependencyNode.appendNode('artifactId', it.name)
+                            dependencyNode.appendNode('version', it.version)
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    bintray {
+        user = bintrayUser
+        key = bintrayApiKey
+        pkg {
+            repo = 'maven'
+            name = 'vcalendar'
+            publish = true
+            publicDownloadNumbers = true
+            licenses = ['MIT']
+            vcsUrl = 'https://github.com/edwardstock/vcalendar.git'
+            githubRepo = 'https://github.com/edwardstock/vcalendar.git'
+            desc = "Adavnced Android RecyclerView calendar"
+            dryRun = hasProperty("dryRun")
+            version {
+                name = android.defaultConfig.versionName
+                released = new Date()
+                vcsTag = android.defaultConfig.versionName
+            }
+        }
+        configurations = ['archives']
+        override = true
+        publications = ['vcalendar']
+    }
+} else {
+    println "System has no bintray user"
 }
