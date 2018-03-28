@@ -5,6 +5,7 @@ import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.SimpleItemAnimator;
 import android.view.View;
 import android.widget.TextView;
 
@@ -41,19 +42,18 @@ public class CalendarMonthItem implements MultiRowContract.Row<CalendarMonthItem
         cal.set(Calendar.DAY_OF_MONTH, month.dayOfMonth().withMaximumValue().getDayOfMonth());
         int weeksInMonth = cal.getActualMaximum(Calendar.WEEK_OF_MONTH);
 
-
-        CalendarDay[][] weeksDays = new CalendarDay[weeksInMonth][7];
-
+        CalendarDay[][] weeksDaysWithOffset = new CalendarDay[weeksInMonth][7];
 
         for (int weekNum = 0, dayNum = 1; weekNum < weeksInMonth; weekNum++) {
-            CalendarDay[] days = weeksDays[weekNum];
+            CalendarDay[] days = weeksDaysWithOffset[weekNum];
             if (days == null) {
-                weeksDays[weekNum] = new CalendarDay[7];
-                days = weeksDays[weekNum];
+                weeksDaysWithOffset[weekNum] = new CalendarDay[7];
+                days = weeksDaysWithOffset[weekNum];
             }
 
             for (int dayIdx = 0; dayIdx < 7; dayIdx++, dayNum++) {
                 if (dayNum > month.dayOfMonth().withMaximumValue().getDayOfMonth()) {
+                    days[dayIdx] = null;
                     break;
                 }
 
@@ -67,7 +67,8 @@ public class CalendarMonthItem implements MultiRowContract.Row<CalendarMonthItem
             }
         }
 
-        mDaysAdapter = new DaysAdapter(calendarHandler, weeksDays);
+
+        mDaysAdapter = new DaysAdapter(calendarHandler, weeksDaysWithOffset, getMonth());
         mDaysAdapter.setOnDayItemClickListener(dayItemClickedListener);
 
     }
@@ -134,13 +135,17 @@ public class CalendarMonthItem implements MultiRowContract.Row<CalendarMonthItem
 
         LinearLayoutManager layoutManager = new LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false);
 
+        //        viewHolder.list.setItemAnimator(null);
+        if (viewHolder.list.getItemAnimator() instanceof SimpleItemAnimator) {
+            ((SimpleItemAnimator) viewHolder.list.getItemAnimator()).setSupportsChangeAnimations(false);
+        }
         viewHolder.list.setLayoutManager(layoutManager);
         viewHolder.list.setNestedScrollingEnabled(false);
         viewHolder.list.setHasFixedSize(true);
         viewHolder.list.setItemViewCacheSize(mDaysAdapter.getItemCount());
         viewHolder.list.setDrawingCacheEnabled(true);
         viewHolder.list.setAdapter(mDaysAdapter);
-        viewHolder.list.setItemAnimator(null);
+
 
         if (mOnBindListener != null) {
             mOnBindListener.onBindMonth(getMonth());

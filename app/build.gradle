@@ -20,6 +20,12 @@ android {
         targetCompatibility 1.8
         sourceCompatibility 1.8
     }
+
+    lintOptions {
+        disable 'CheckResult', 'DefaultLocale'
+        abortOnError false
+        ignoreWarnings true
+    }
 }
 
 dependencies {

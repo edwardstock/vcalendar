@@ -4,6 +4,7 @@ import android.content.Context;
 import android.support.annotation.IntDef;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v4.util.ArrayMap;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -17,9 +18,15 @@ import com.edwardstock.vcalendar.SelectionMode;
 import com.edwardstock.vcalendar.models.CalendarDay;
 import com.edwardstock.vcalendar.widgets.SquareTextView;
 
+import org.joda.time.DateTime;
+import org.joda.time.YearMonth;
+
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.ref.WeakReference;
+import java.util.Map;
+
+import timber.log.Timber;
 
 import static com.edwardstock.vcalendar.adapter.DaysAdapter.Neighbourhood.IS_BEGIN;
 import static com.edwardstock.vcalendar.adapter.DaysAdapter.Neighbourhood.IS_END;
@@ -34,14 +41,17 @@ import static com.edwardstock.vcalendar.common.Preconditions.checkNotNull;
  */
 public class DaysAdapter extends RecyclerView.Adapter<DaysAdapter.WeekHolder> {
     private final CalendarDay[][] mData;
+    private final YearMonth mMonth;
     private LayoutInflater mInflater;
     private WeakReference<Context> mContext;
     private WeakReference<CalendarHandler> mCalendarHandler;
     private DayItemClickedListener mDayItemClickedListener;
+    private Map<Integer, DayIndex> mDayIndex = new ArrayMap<>();
 
-    public DaysAdapter(@NonNull CalendarHandler calendarHandler, @NonNull final CalendarDay[][] weeksDays) {
+    public DaysAdapter(@NonNull CalendarHandler calendarHandler, @NonNull final CalendarDay[][] weeksDays, YearMonth month) {
         mCalendarHandler = new WeakReference<>(checkNotNull(calendarHandler, "Calendar delegate can't be null"));
         mData = checkNotNull(weeksDays, "Days can't be null");
+        mMonth = month;
     }
 
     public void setOnDayItemClickListener(DayItemClickedListener listener) {
@@ -79,6 +89,7 @@ public class DaysAdapter extends RecyclerView.Adapter<DaysAdapter.WeekHolder> {
     @Override
     public void onBindViewHolder(@NonNull WeekHolder holder, int position) {
         final CalendarDay[] days = mData[position];
+        Timber.d("Bind week %d in month %s", position + 1, mMonth.toString());
 
         Stream.of(days).forEachIndexed((idx, calendarDay) -> {
             final TextView tv = holder.days[idx];
@@ -94,14 +105,98 @@ public class DaysAdapter extends RecyclerView.Adapter<DaysAdapter.WeekHolder> {
 
             resolveStyle(calendarDay, tv);
 
-            Stream.of(mCalendarHandler.get().getDayDecorators())
-			        .filter(item -> item != null && item.shouldDecorate(calendarDay)).forEach(item -> item.decorate(calendarDay, tv));
+            Stream.of(mCalendarHandler.get().getDayDecorators()).filter(item -> item != null && item.shouldDecorate(calendarDay)).forEach(item -> item.decorate(calendarDay, tv));
         });
     }
 
     @Override
     public int getItemCount() {
         return mData.length;
+    }
+
+    public void updateRange(CalendarDay begin, CalendarDay end) {
+        updateRange(begin.getDateTime(), end.getDateTime());
+    }
+
+    public void updateRange(DateTime begin, DateTime end) {
+        if (begin.getMonthOfYear() != end.getMonthOfYear()) {
+            Timber.w("Can't update range in a few months");
+            return;
+        }
+
+        DayIndex first = getOrCreateIndex(begin.getDayOfMonth());
+        DayIndex last = getOrCreateIndex(begin.getDayOfMonth());
+        notifyItemRangeChanged(first.weekIdx, last.weekIdx - first.weekIdx);
+
+    }
+
+    public void update(CalendarDay calendarDay) {
+        update(calendarDay.getDateTime());
+    }
+
+    public void update(DateTime dateTime) {
+        DayIndex index = getOrCreateIndex(dateTime.getDayOfMonth());
+        notifyItemChanged(index.weekIdx, index);
+
+    }
+
+    public boolean hasIndex(int dayNum) {
+        return mDayIndex.containsKey(dayNum);
+    }
+
+    public DayIndex getIndex(int dayNum) {
+        return mDayIndex.get(dayNum);
+    }
+
+    public DayIndex getOrCreateIndex(int dayNum) {
+        if (!hasIndex(dayNum)) {
+            return createIndex(dayNum);
+        }
+
+        return getIndex(dayNum);
+    }
+
+    private DayIndex createIndex(int dayNum) {
+        int closerWeek = (int) ((float) dayNum / 7f);
+
+        DayIndex index = null;
+
+        if (mData[closerWeek][0] != null && mData[closerWeek][0].getDay() == dayNum) {
+            index = new DayIndex(closerWeek, 0);
+        } else if (mData[closerWeek][6] != null && mData[closerWeek][6].getDay() == dayNum) {
+            index = new DayIndex(closerWeek, 6);
+        } else {
+            while (index == null && closerWeek < mData.length) {
+                for (int i = 0; i < 7; i++) {
+                    if (mData[closerWeek].length > i && mData[closerWeek][i] != null && mData[closerWeek][i].getDay() == dayNum) {
+                        index = new DayIndex(closerWeek, i);
+                        break;
+                    }
+                }
+                closerWeek++;
+            }
+        }
+
+        //noinspection ConstantConditions
+        if (index == null) {
+            throw new RuntimeException(String.format("Unable to find day %d in month %s", dayNum, mMonth.toString()));
+        }
+
+        mDayIndex.put(dayNum, index);
+
+        return index;
+    }
+
+    private void putIndex(int dayNum, int weekIdx, int dayIdx) {
+        mDayIndex.put(dayNum, new DayIndex(weekIdx, dayIdx));
+    }
+
+    private CalendarDay getDayByIndex(DayIndex index) {
+        return mData[index.weekIdx][index.dayIdx];
+    }
+
+    private CalendarDay findDay(int dayNum) {
+        return getDayByIndex(getOrCreateIndex(dayNum));
     }
 
     private boolean isValidContext() {
@@ -120,8 +215,7 @@ public class DaysAdapter extends RecyclerView.Adapter<DaysAdapter.WeekHolder> {
         return !isSelected(previousDay);
     }
 
-    private boolean hasNoNeighbours(@Nullable CalendarDay previousDay,
-                                    @Nullable CalendarDay nextDay) {
+    private boolean hasNoNeighbours(@Nullable CalendarDay previousDay, @Nullable CalendarDay nextDay) {
         return !isSelected(previousDay) && !isSelected(nextDay);
     }
 
@@ -187,18 +281,36 @@ public class DaysAdapter extends RecyclerView.Adapter<DaysAdapter.WeekHolder> {
         void onClick(CalendarDay calendarDay, View dayView, DaysAdapter adapter);
     }
 
-    @IntDef({
-            NO_NEIGHBOURS,
-            IS_BEGIN,
-            IS_MIDDLE,
-            IS_END
-    })
+    @IntDef({NO_NEIGHBOURS, IS_BEGIN, IS_MIDDLE, IS_END})
     @Retention(RetentionPolicy.SOURCE)
     public @interface Neighbourhood {
         int NO_NEIGHBOURS = 0;
         int IS_BEGIN = 1;
         int IS_MIDDLE = 2;
         int IS_END = 3;
+    }
+
+    public static final class DayIndex {
+        int weekIdx;
+        int dayIdx;
+
+        DayIndex(int w, int d) {
+            weekIdx = w;
+            dayIdx = d;
+        }
+
+        public int getDayIdx() {
+            return dayIdx;
+        }
+
+        public int getWeekIdx() {
+            return weekIdx;
+        }
+
+        @Override
+        public String toString() {
+            return String.format("DayIndex{weekIdx=%d, dayIdx=%d}", weekIdx, dayIdx);
+        }
     }
 
     public static class WeekHolder extends RecyclerView.ViewHolder {

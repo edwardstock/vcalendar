@@ -32,12 +32,11 @@ import org.joda.time.Months;
 import org.joda.time.YearMonth;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import timber.log.Timber;
 
@@ -179,6 +178,14 @@ public class VCalendar extends FrameLayout implements CalendarHandler {
     @Override
     public CalendarDay getDay(DateTime dateTime) {
         return mDayMap.get(dateTime.withTime(0, 0, 0, 0));
+    }
+
+    public int getDaysRenderedCount() {
+        return mDayMap.size();
+    }
+
+    public int getMonthsRenderedCount() {
+        return mRowMap.size();
     }
 
     @Override
@@ -325,7 +332,7 @@ public class VCalendar extends FrameLayout implements CalendarHandler {
         return this;
     }
 
-    public void reset() {
+    public final void reset() {
         if (mAdapter == null || mList == null) {
             return;
         }
@@ -340,6 +347,85 @@ public class VCalendar extends FrameLayout implements CalendarHandler {
     @Override
     public SelectionDispatcher getSelectionDispatcher() {
         return mSelectionDispatcher;
+    }
+
+    public void updateDaysDate(Collection<Date> dateTimes) {
+        updateDays(Stream.of(dateTimes).map(DateTime::new).toList());
+    }
+
+    public void updateDaysString(Collection<String> dateTimes) {
+        updateDays(Stream.of(dateTimes).map(DateTime::new).toList());
+    }
+
+    public void updateDays(Collection<DateTime> dateTimes) {
+        final Map<YearMonth, List<DateTime>> daysMap = new HashMap<>();
+        for (DateTime day : dateTimes) {
+            YearMonth month = new YearMonth(day);
+            if (!daysMap.containsKey(month)) {
+                daysMap.put(month, new ArrayList<>());
+            }
+            daysMap.get(month).add(day);
+        }
+
+        for (Map.Entry<YearMonth, List<DateTime>> entry : daysMap.entrySet()) {
+            if (mRowMap.containsKey(entry.getKey())) {
+                for (DateTime dt : entry.getValue()) {
+                    mRowMap.get(entry.getKey()).getAdapter().update(dt);
+                }
+            }
+        }
+    }
+
+    public void updateDay(Date date) {
+        updateDay(new DateTime(date));
+    }
+
+    public void updateDay(CalendarDay calendarDay) {
+        updateDay(calendarDay.getDateTime());
+    }
+
+    public void updateDay(DateTime dateTime) {
+        YearMonth ym = new YearMonth(dateTime);
+        if (mRowMap.containsKey(ym)) {
+            CalendarMonthItem item = mRowMap.get(ym);
+            item.getAdapter().update(dateTime);
+        }
+    }
+
+    public void updateMonthsDate(Collection<Date> months) {
+        updateMonths(Stream.of(months).map(YearMonth::new).toList());
+    }
+
+    public void updateMonthsDateTime(Collection<DateTime> months) {
+        updateMonths(Stream.of(months).map(YearMonth::new).toList());
+    }
+
+    public void updateMonthsString(Collection<String> months) {
+        updateMonths(Stream.of(months).map(YearMonth::new).toList());
+    }
+
+    public void updateMonths(Collection<YearMonth> months) {
+        Stream.of(months).forEach(this::updateMonth);
+    }
+
+    public void updateMonth(String month) {
+        updateMonth(new YearMonth(month));
+    }
+
+    public void updateMonth(DateTime month) {
+        updateMonth(new YearMonth(month));
+    }
+
+    public void updateMonth(Date date) {
+        updateMonth(new YearMonth(date));
+    }
+
+    public void updateMonth(YearMonth month) {
+        if (!mRowMap.containsKey(month)) {
+            return;
+        }
+
+        mRowMap.get(month).getAdapter().notifyDataSetChanged();
     }
 
     private int clamp(int val, int min, int max) {
@@ -511,16 +597,21 @@ public class VCalendar extends FrameLayout implements CalendarHandler {
     }
 
     private void updateSelectionsAndClear() {
-        Set<YearMonth> months = new HashSet<>();
+        final Map<YearMonth, List<CalendarDay>> daysMap = new HashMap<>();
         for (CalendarDay day : getSelectionDispatcher().getSelections()) {
-            DateTime month = day.getDateTime().dayOfMonth().withMinimumValue();
-            months.add(new YearMonth(month));
+            YearMonth month = new YearMonth(day.getDateTime());
             day.setSelected(false);
+            if (!daysMap.containsKey(month)) {
+                daysMap.put(month, new ArrayList<>());
+            }
+            daysMap.get(month).add(day);
         }
 
-        for (YearMonth month : months) {
-            if (mRowMap.containsKey(month)) {
-                mRowMap.get(month).getAdapter().notifyDataSetChanged();
+        for (Map.Entry<YearMonth, List<CalendarDay>> entry : daysMap.entrySet()) {
+            if (mRowMap.containsKey(entry.getKey())) {
+                for (CalendarDay cd : entry.getValue()) {
+                    mRowMap.get(entry.getKey()).getAdapter().update(cd);
+                }
             }
         }
 
@@ -528,16 +619,20 @@ public class VCalendar extends FrameLayout implements CalendarHandler {
     }
 
     private void updateSelections() {
-        Set<YearMonth> months = new HashSet<>();
+        final Map<YearMonth, List<CalendarDay>> daysMap = new HashMap<>();
         for (CalendarDay day : getSelectionDispatcher().getSelections()) {
-            DateTime month = day.getDateTime().dayOfMonth().withMinimumValue();
-            months.add(new YearMonth(month));
+            YearMonth month = new YearMonth(day.getDateTime());
+            if (!daysMap.containsKey(month)) {
+                daysMap.put(month, new ArrayList<>());
+            }
+            daysMap.get(month).add(day);
         }
 
-        for (YearMonth month : months) {
-            if (mRowMap.containsKey(month)) {
-                // @TODO only selected items
-                mRowMap.get(month).getAdapter().notifyDataSetChanged();
+        for (Map.Entry<YearMonth, List<CalendarDay>> entry : daysMap.entrySet()) {
+            if (mRowMap.containsKey(entry.getKey())) {
+                for (CalendarDay cd : entry.getValue()) {
+                    mRowMap.get(entry.getKey()).getAdapter().update(cd);
+                }
             }
         }
     }

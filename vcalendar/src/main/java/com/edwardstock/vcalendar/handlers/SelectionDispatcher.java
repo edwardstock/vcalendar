@@ -18,6 +18,8 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.TreeSet;
 
 import static com.edwardstock.vcalendar.common.Preconditions.checkNotNull;
 
@@ -243,8 +245,9 @@ public final class SelectionDispatcher implements OnDayClickListener {
     }
 
     final void callOnSelectionListeners(boolean isLimitExceeded) {
+        final Set<CalendarDay> s = new TreeSet<>(getSelections());
         for (OnSelectionListener l : mOnSelectionListeners) {
-            l.onSelected(getSelections(), isLimitExceeded);
+            l.onSelected(new ArrayList<>(s), isLimitExceeded);
         }
     }
 

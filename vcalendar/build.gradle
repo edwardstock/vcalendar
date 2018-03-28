@@ -28,6 +28,12 @@ android {
         targetCompatibility 1.8
         sourceCompatibility 1.8
     }
+
+    lintOptions {
+        disable 'CheckResult', 'DefaultLocale'
+        abortOnError false
+        ignoreWarnings true
+    }
 }
 
 ext.libSupport = "27.1.0"
