@@ -1,9 +1,4 @@
-if (false/*hasProperty("bintrayApiKey") && hasProperty("bintrayUser")*/) {
-
-    plugin {
-        id 'maven-publish'
-        id "com.jfrog.bintray" version "1.7.3"
-    }
+if (hasProperty("bintrayApiKey") && hasProperty("bintrayUser")) {
 
     def pomDescription = "Advanced Android RecyclerView calendar"
 

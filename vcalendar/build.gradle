@@ -1,5 +1,7 @@
 plugins {
     id 'com.android.library'
+    id 'maven-publish'
+    id "com.jfrog.bintray" version "1.7.3"
 }
 
 android {
@@ -53,7 +55,4 @@ dependencies {
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.1'
 }
 
-apply plugin: 'com.github.dcendents.android-maven'
-
-group = 'com.github.edwardstock'
-version = android.defaultConfig.versionName
+apply from: '../bintray_publish.gradle'
