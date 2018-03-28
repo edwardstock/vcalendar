@@ -1,7 +1,5 @@
 plugins {
     id 'com.android.library'
-    id 'maven-publish'
-    id "com.jfrog.bintray" version "1.7.3"
 }
 
 android {
@@ -55,95 +53,7 @@ dependencies {
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.1'
 }
 
-if (hasProperty("bintrayApiKey") && hasProperty("bintrayUser")) {
+apply plugin: 'com.github.dcendents.android-maven'
 
-    def pomDescription = "Advanced Android RecyclerView calendar"
-
-    task androidJavadocs(type: Javadoc) {
-        source = android.sourceSets.main.java.source
-        classpath += project.files(android.getBootClasspath().join(File.pathSeparator))
-    }
-
-    task androidJavadocsJar(type: Jar, dependsOn: androidJavadocs) {
-        classifier = 'javadoc'
-        from androidJavadocs.destinationDir
-    }
-
-    task androidSourcesJar(type: Jar) {
-        classifier = 'sources'
-        from android.sourceSets.main.java.source
-    }
-
-    publishing {
-        publications {
-            vcalendar(MavenPublication) {
-                groupId "com.edwardstock"
-                artifactId 'vcalendar'
-
-                artifact("$buildDir/outputs/aar/vcalendar-release.aar")
-                version android.defaultConfig.versionName
-
-                pom.withXml {
-                    asNode().appendNode("description", pomDescription)
-                    def licenses = asNode().appendNode("licenses")
-                    def mitLicense = licenses.appendNode("license")
-                    mitLicense.appendNode("name", "MIT License")
-                    mitLicense.appendNode("url", "https://github.com/edwardstock/vcalendar/blob/master/LICENSE")
-                    mitLicense.appendNode("distribution", "repo")
-                    mitLicense.appendNode("comments", "Absolutely free license.")
-
-                    def developer = asNode().appendNode("developers").appendNode("developer")
-                    developer.appendNode("id", "edwardstock")
-                    developer.appendNode("name", "Eduard Maximovich")
-                    developer.appendNode("email", "edward.vstock@gmail.com")
-                    developer.appendNode("url", "https://github.com/edwardstock")
-                    developer.appendNode("roles").appendNode("role", "developer")
-                    developer.appendNode("timezone", "Europe/Moscow")
-
-                    def dependenciesNode = asNode().appendNode('dependencies')
-
-                    // Iterate over the implementation dependencies (we don't want the test ones), adding a <dependency> node for each
-                    configurations.implementation.allDependencies.each {
-                        // Ensure dependencies such as fileTree are not included in the pom.
-                        if (it.name != 'unspecified') {
-                            def dependencyNode = dependenciesNode.appendNode('dependency')
-                            dependencyNode.appendNode('groupId', it.group)
-                            dependencyNode.appendNode('artifactId', it.name)
-                            dependencyNode.appendNode('version', it.version)
-                        }
-                    }
-
-
-                }
-            }
-        }
-    }
-
-    println("Bintray user "+bintrayUser)
-    println("Bintray key " + bintrayApiKey)
-
-    bintray {
-        user = bintrayUser
-        key = bintrayApiKey
-        pkg {
-            repo = 'vcalendar'
-            name = 'vcalendar'
-            publish = true
-            publicDownloadNumbers = true
-            licenses = ['MIT']
-            vcsUrl = 'https://github.com/edwardstock/vcalendar.git'
-            githubRepo = 'https://github.com/edwardstock/vcalendar.git'
-            desc = pomDescription
-            version {
-                name = android.defaultConfig.versionName
-                released = new Date()
-                vcsTag = android.defaultConfig.versionName
-            }
-        }
-        configurations = ['archives']
-        override = true
-        publications = ['vcalendar']
-    }
-} else {
-    println "System has no bintray user"
-}
+group = 'com.github.edwardstock'
+version = android.defaultConfig.versionName
