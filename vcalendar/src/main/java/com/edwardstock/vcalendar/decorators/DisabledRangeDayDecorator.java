@@ -2,10 +2,9 @@ package com.edwardstock.vcalendar.decorators;
 
 import android.content.Context;
 import android.support.annotation.IntDef;
-import android.widget.TextView;
 
-import com.edwardstock.vcalendar.DayDecorator;
 import com.edwardstock.vcalendar.R;
+import com.edwardstock.vcalendar.adapter.DayViewFacade;
 import com.edwardstock.vcalendar.models.CalendarDay;
 
 import org.joda.time.DateTime;
@@ -31,7 +30,7 @@ public class DisabledRangeDayDecorator implements DayDecorator {
     public DisabledRangeDayDecorator(Context context, @RangeMode int mode, DateTime initial) {
         mContext = new WeakReference<>(context);
         mMode = mode;
-        if(mode == BEFORE) {
+        if (mode == BEFORE) {
             mInitial = initial.minusDays(1);
         } else {
             mInitial = initial.plusDays(1);
@@ -42,9 +41,9 @@ public class DisabledRangeDayDecorator implements DayDecorator {
     @Override
     public boolean shouldDecorate(CalendarDay calendarDay) {
         DateTime cur = calendarDay.getDateTime();
-        if(mMode == BEFORE && cur.compareTo(mInitial) < 0) {
+        if (mMode == BEFORE && cur.compareTo(mInitial) < 0) {
             return true;
-        } else if(mMode == AFTER && cur.compareTo(mInitial) > 0) {
+        } else if (mMode == AFTER && cur.compareTo(mInitial) > 0) {
             return true;
         } else {
             return false;
@@ -52,8 +51,8 @@ public class DisabledRangeDayDecorator implements DayDecorator {
     }
 
     @Override
-    public void decorate(CalendarDay calendarDay, TextView dayView) {
-        dayView.setTextColor(mContext.get().getResources().getColor(R.color.vcal_text_color_half));
+    public void decorate(CalendarDay calendarDay, DayViewFacade dayView, int neighbourhood) {
+        dayView.setTextColorRes(R.color.vcal_text_color_half);
     }
 
     @IntDef({

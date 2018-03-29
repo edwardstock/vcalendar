@@ -24,6 +24,13 @@ dependencies {
 }
 ```
 
+If you already have android implementation of JodaTime, and/or probably you have error "Program type already present: org.joda.time.Chronology" or something like this, than add instead this lines:
+```groovy
+implementation ('com.edwardstock:vcalendar:1.0.0') {
+    exclude group: 'joda-time'
+}
+```
+
 
 ## Using
  ### Initializing

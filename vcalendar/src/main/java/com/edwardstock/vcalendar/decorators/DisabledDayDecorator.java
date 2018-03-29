@@ -1,11 +1,11 @@
 package com.edwardstock.vcalendar.decorators;
 
 import android.content.Context;
-import android.widget.TextView;
+import android.support.annotation.ColorRes;
 
 import com.annimon.stream.Stream;
-import com.edwardstock.vcalendar.DayDecorator;
 import com.edwardstock.vcalendar.R;
+import com.edwardstock.vcalendar.adapter.DayViewFacade;
 import com.edwardstock.vcalendar.common.Consumer;
 import com.edwardstock.vcalendar.models.CalendarDay;
 
@@ -22,6 +22,12 @@ import java.util.List;
 public class DisabledDayDecorator implements DayDecorator {
     private final Consumer<List<DateTime>> mDisabledDays;
     private final WeakReference<Context> mContext;
+    private int mDisabledColor = R.color.vcal_text_color_half;
+
+    public DisabledDayDecorator(Context context, Consumer<List<DateTime>> disabledDays, @ColorRes int colorRes) {
+        this(context, disabledDays);
+        mDisabledColor = colorRes;
+    }
 
     public DisabledDayDecorator(Context context, Consumer<List<DateTime>> disabledDays) {
         mContext = new WeakReference<>(context);
@@ -37,7 +43,9 @@ public class DisabledDayDecorator implements DayDecorator {
     }
 
     @Override
-    public void decorate(CalendarDay calendarDay, TextView dayView) {
-        dayView.setTextColor(mContext.get().getResources().getColor(R.color.vcal_text_color_half));
+    public void decorate(CalendarDay calendarDay, DayViewFacade dayView, int neighbourhood) {
+        dayView.setTextColorRes(mDisabledColor);
     }
+
+
 }

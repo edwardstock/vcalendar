@@ -18,6 +18,7 @@
         />
 
     <LinearLayout
+        android:id="@+id/weekDaysLayout"
         style="@style/VCalendar.MonthLegend"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -30,7 +31,7 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="@string/weekday_mon"
+            android:text="Mon"
             />
 
         <TextView
@@ -38,7 +39,7 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="@string/weekday_tue"
+            android:text="Tue"
             />
 
         <TextView
@@ -46,7 +47,7 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="@string/weekday_wed"
+            android:text="Wed"
             />
 
         <TextView
@@ -54,7 +55,7 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="@string/weekday_thu"
+            android:text="Thu"
             />
 
         <TextView
@@ -62,7 +63,7 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="@string/weekday_fri"
+            android:text="Fri"
             />
 
         <TextView
@@ -70,7 +71,7 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="@string/weekday_sat"
+            android:text="Sat"
             />
 
         <TextView
@@ -78,7 +79,7 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="@string/weekday_sun"
+            android:text="Sun"
             />
     </LinearLayout>
 

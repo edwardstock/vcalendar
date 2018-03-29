@@ -160,7 +160,11 @@ public final class SelectionDispatcher implements OnDayClickListener {
 
     public void clearSelections() {
         mDelegate.onClear();
+        Stream.of(mSelections)
+                .map(item -> mDelegate.getDayOrCreate(item.getDateTime()))
+                .forEach(item -> item.setSelected(false));
         mSelections.clear();
+//        mDelegate.onUpdate();
     }
 
     public CalendarDay getDayOrCreate(DateTime dateTime) {
@@ -185,6 +189,10 @@ public final class SelectionDispatcher implements OnDayClickListener {
 
     public final void setSelections(@NonNull String[] datesStrings) {
         setSelections(Stream.of(checkNotNull(datesStrings, "Selections can't be null")).map(DateTime::new).toList());
+    }
+
+    public void setSelectionsCalendarDays(List<CalendarDay> selections) {
+        setSelections(Stream.of(selections).map(CalendarDay::getDateTime).toList());
     }
 
     public void setSelections(List<DateTime> selections) {

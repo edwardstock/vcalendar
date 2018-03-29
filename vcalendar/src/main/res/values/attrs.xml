@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <declare-styleable name="VCalendar">
-        <!-- 2018-01 -->
         <attr name="initialDate" format="string"/>
         <attr name="selectionBeginBackground" format="reference"/>
         <attr name="selectionMiddleBackground" format="reference"/>
@@ -18,5 +17,8 @@
             <enum name="vertical" value="1"/>
         </attr>
         <attr name="enableLegend" format="boolean"/>
+        <attr name="enableDefaultDecorator" format="boolean"/>
+        <attr name="monthNamesArray" format="reference"/>
+        <attr name="daysOfWeekNamesArray" format="reference"/>
     </declare-styleable>
 </resources>

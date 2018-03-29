@@ -7,6 +7,7 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SimpleItemAnimator;
 import android.view.View;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.edwardstock.vcalendar.CalendarHandler;
@@ -25,13 +26,11 @@ import java.util.Calendar;
  * @author Eduard Maximovich <edward.vstock@gmail.com>
  */
 public class CalendarMonthItem implements MultiRowContract.Row<CalendarMonthItem.ViewHolder> {
-    private static final String[] MONTHS = new String[]{"Январь", "Февраль", "Март", "Апрель", "Май", "Июнь", "Июль", "Август", "Сентябрь", "Октябрь", "Ноябрь", "Декабрь",};
     private final DaysAdapter mDaysAdapter;
     private final YearMonth mMonth;
     private final WeakReference<CalendarHandler> mHandler;
     private OnBindListener mOnBindListener;
     private OnUnbindListener mOnUnbindListener;
-
     public CalendarMonthItem(CalendarHandler calendarHandler, DateTime month, DaysAdapter.DayItemClickedListener dayItemClickedListener) {
         mMonth = new YearMonth(month.withTime(0, 0, 0, 0).dayOfMonth().withMinimumValue());
         mHandler = new WeakReference<>(calendarHandler);
@@ -129,13 +128,17 @@ public class CalendarMonthItem implements MultiRowContract.Row<CalendarMonthItem
 
         if (isValidHandler()) {
             viewHolder.monthName.setVisibility(mHandler.get().isEnabledLegend() ? View.VISIBLE : View.GONE);
+            viewHolder.monthName.setText(String.format("%s %d", mHandler.get().getMonthNames()[mMonth.getMonthOfYear() - 1], mMonth.getYear()));
+
+            for (int i = 0; i < 7; i++) {
+                ((TextView) viewHolder.weekDaysLayout.getChildAt(i))
+                        .setText(mHandler.get().getDaysOfWeek()[i]);
+            }
         }
 
-        viewHolder.monthName.setText(String.format("%s %d", MONTHS[mMonth.getMonthOfYear() - 1], mMonth.getYear()));
 
         LinearLayoutManager layoutManager = new LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false);
 
-        //        viewHolder.list.setItemAnimator(null);
         if (viewHolder.list.getItemAnimator() instanceof SimpleItemAnimator) {
             ((SimpleItemAnimator) viewHolder.list.getItemAnimator()).setSupportsChangeAnimations(false);
         }
@@ -180,11 +183,13 @@ public class CalendarMonthItem implements MultiRowContract.Row<CalendarMonthItem
     public static class ViewHolder extends MultiRowAdapter.RowViewHolder {
         RecyclerView list;
         TextView monthName;
+        LinearLayout weekDaysLayout;
 
         public ViewHolder(View itemView) {
             super(itemView);
             monthName = itemView.findViewById(R.id.monthName);
             list = itemView.findViewById(R.id.list);
+            weekDaysLayout = itemView.findViewById(R.id.weekDaysLayout);
         }
     }
 }

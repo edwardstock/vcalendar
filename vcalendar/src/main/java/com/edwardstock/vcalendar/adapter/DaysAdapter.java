@@ -1,7 +1,7 @@
 package com.edwardstock.vcalendar.adapter;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
-import android.support.annotation.IntDef;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.util.ArrayMap;
@@ -21,17 +21,15 @@ import com.edwardstock.vcalendar.widgets.SquareTextView;
 import org.joda.time.DateTime;
 import org.joda.time.YearMonth;
 
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
 import java.lang.ref.WeakReference;
 import java.util.Map;
 
 import timber.log.Timber;
 
-import static com.edwardstock.vcalendar.adapter.DaysAdapter.Neighbourhood.IS_BEGIN;
-import static com.edwardstock.vcalendar.adapter.DaysAdapter.Neighbourhood.IS_END;
-import static com.edwardstock.vcalendar.adapter.DaysAdapter.Neighbourhood.IS_MIDDLE;
-import static com.edwardstock.vcalendar.adapter.DaysAdapter.Neighbourhood.NO_NEIGHBOURS;
+import static com.edwardstock.vcalendar.adapter.Neighbourhood.IS_BEGIN;
+import static com.edwardstock.vcalendar.adapter.Neighbourhood.IS_END;
+import static com.edwardstock.vcalendar.adapter.Neighbourhood.IS_MIDDLE;
+import static com.edwardstock.vcalendar.adapter.Neighbourhood.NO_NEIGHBOURS;
 import static com.edwardstock.vcalendar.common.Preconditions.checkNotNull;
 
 /**
@@ -104,8 +102,6 @@ public class DaysAdapter extends RecyclerView.Adapter<DaysAdapter.WeekHolder> {
             tv.setText(String.valueOf(calendarDay.getDay()));
 
             resolveStyle(calendarDay, tv);
-
-            Stream.of(mCalendarHandler.get().getDayDecorators()).filter(item -> item != null && item.shouldDecorate(calendarDay)).forEach(item -> item.decorate(calendarDay, tv));
         });
     }
 
@@ -137,7 +133,6 @@ public class DaysAdapter extends RecyclerView.Adapter<DaysAdapter.WeekHolder> {
     public void update(DateTime dateTime) {
         DayIndex index = getOrCreateIndex(dateTime.getDayOfMonth());
         notifyItemChanged(index.weekIdx, index);
-
     }
 
     public boolean hasIndex(int dayNum) {
@@ -187,10 +182,6 @@ public class DaysAdapter extends RecyclerView.Adapter<DaysAdapter.WeekHolder> {
         return index;
     }
 
-    private void putIndex(int dayNum, int weekIdx, int dayIdx) {
-        mDayIndex.put(dayNum, new DayIndex(weekIdx, dayIdx));
-    }
-
     private CalendarDay getDayByIndex(DayIndex index) {
         return mData[index.weekIdx][index.dayIdx];
     }
@@ -237,9 +228,7 @@ public class DaysAdapter extends RecyclerView.Adapter<DaysAdapter.WeekHolder> {
         return NO_NEIGHBOURS;
     }
 
-    private void resolveStyle(CalendarDay day, TextView tv) {
-        int neighbourhood;
-
+    private void resolveStyle(final CalendarDay day, final TextView tv) {
         CalendarDay previousDay = mCalendarHandler.get().getPreviousDay(day);
         CalendarDay nextDay = mCalendarHandler.get().getNextDay(day);
         int dayOfWeek = day.getDateTime().getDayOfWeek();
@@ -251,43 +240,19 @@ public class DaysAdapter extends RecyclerView.Adapter<DaysAdapter.WeekHolder> {
             previousDay = null;
         }
 
-        neighbourhood = getNeighbourhood(previousDay, nextDay);
-        tv.setTextColor(mContext.get().getResources().getColor(R.color.vcal_text_color_dark));
+        int neighbourhood = getNeighbourhood(previousDay, nextDay);
+        final DayViewFacade facade = new DayViewFacade(tv);
+        facade.reset();
+        facade.setSelectedState(day.isSelected());
 
-        if (mCalendarHandler.get().getSelectionDispatcher().getMode() == SelectionMode.RANGE) {
-            if (day.isSelected()) {
-                if (neighbourhood == IS_BEGIN) {
-                    tv.setBackgroundResource(mCalendarHandler.get().getSelectedBeginBackgroundRes());
-                } else if (neighbourhood == IS_MIDDLE) {
-                    tv.setBackgroundResource(mCalendarHandler.get().getSelectedMiddleBackgroundRes());
-                } else if (neighbourhood == IS_END) {
-                    tv.setBackgroundResource(mCalendarHandler.get().getSelectedEndBackgroundRes());
-                } else {
-                    tv.setBackgroundResource(mCalendarHandler.get().getSelectedSingleBackgroundRes());
-                }
-            } else {
-                tv.setBackground(null);
-            }
-        } else {
-            if (day.isSelected()) {
-                tv.setBackgroundResource(mCalendarHandler.get().getSelectedSingleBackgroundRes());
-            } else {
-                tv.setBackground(null);
-            }
-        }
+        boolean isRange = mCalendarHandler.get().getSelectionDispatcher().getMode() == SelectionMode.RANGE;
+        Stream.of(mCalendarHandler.get().getDayDecorators())
+                .filter(item -> item.shouldDecorate(day))
+                .forEach(item -> item.decorate(day, facade, isRange ? neighbourhood : Neighbourhood.NO_NEIGHBOURS));
     }
 
     public interface DayItemClickedListener {
         void onClick(CalendarDay calendarDay, View dayView, DaysAdapter adapter);
-    }
-
-    @IntDef({NO_NEIGHBOURS, IS_BEGIN, IS_MIDDLE, IS_END})
-    @Retention(RetentionPolicy.SOURCE)
-    public @interface Neighbourhood {
-        int NO_NEIGHBOURS = 0;
-        int IS_BEGIN = 1;
-        int IS_MIDDLE = 2;
-        int IS_END = 3;
     }
 
     public static final class DayIndex {
@@ -307,13 +272,14 @@ public class DaysAdapter extends RecyclerView.Adapter<DaysAdapter.WeekHolder> {
             return weekIdx;
         }
 
+        @SuppressLint("DefaultLocale")
         @Override
         public String toString() {
             return String.format("DayIndex{weekIdx=%d, dayIdx=%d}", weekIdx, dayIdx);
         }
     }
 
-    public static class WeekHolder extends RecyclerView.ViewHolder {
+    public static final class WeekHolder extends RecyclerView.ViewHolder {
         TextView[] days = new TextView[7];
 
         public WeekHolder(View itemView) {

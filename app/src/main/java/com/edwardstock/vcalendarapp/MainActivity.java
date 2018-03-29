@@ -4,9 +4,11 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
 
-import com.edwardstock.vcalendar.OnSelectionListener;
 import com.edwardstock.vcalendar.SelectionMode;
 import com.edwardstock.vcalendar.VCalendar;
+import com.edwardstock.vcalendar.adapter.DayViewFacade;
+import com.edwardstock.vcalendar.decorators.ConnectedDayDecorator;
+import com.edwardstock.vcalendar.decorators.DefaultDayDecorator;
 import com.edwardstock.vcalendar.models.CalendarDay;
 
 import org.joda.time.DateTime;
@@ -24,12 +26,8 @@ public class MainActivity extends AppCompatActivity {
         VCalendar calendar = findViewById(R.id.cal);
         calendar.getSelectionDispatcher().setMode(SelectionMode.RANGE);
 
-
-        calendar.getSelectionDispatcher().addOnSelectionListener(new OnSelectionListener() {
-            @Override
-            public void onSelected(List<CalendarDay> calendarDays, boolean limitExceeded) {
-            }
-        });
+        calendar.addDayDecorator(new DefaultDayDecorator());
+        calendar.addDayDecorator(new CustomDecor(new DateTime("2018-03-27")));
 
 
         //        List<DateTime> selections = new ArrayList<>(2);
@@ -65,7 +63,49 @@ public class MainActivity extends AppCompatActivity {
             }
 
         }, 5000);
+    }
+
+    public final static class CustomDecor extends ConnectedDayDecorator {
+
+        private DateTime mShouldDate;
+
+        CustomDecor(DateTime dt) {
+            mShouldDate = dt;
+        }
+
+        @Override
+        public void decorate(CalendarDay day, DayViewFacade tv, int neighbourhood) {
+            if (day.isSelected()) {
+                super.decorate(day, tv, neighbourhood);
+            } else {
+                tv.setBackgroundResource(R.drawable.shape_round_yellow);
+            }
+        }
 
 
+        @Override
+        public int getSelectedBeginBackgroundRes() {
+            return R.drawable.bg_custom_calendar_day_selection_begin;
+        }
+
+        @Override
+        public int getSelectedMiddleBackgroundRes() {
+            return R.drawable.bg_custom_calendar_day_selection_middle;
+        }
+
+        @Override
+        public int getSelectedEndBackgroundRes() {
+            return R.drawable.bg_custom_calendar_day_selection_end;
+        }
+
+        @Override
+        public int getSelectedSingleBackgroundRes() {
+            return R.drawable.bg_custom_calendar_day_selection_single;
+        }
+
+        @Override
+        public boolean shouldDecorate(CalendarDay calendarDay) {
+            return calendarDay.getDateTime().getDayOfMonth() == mShouldDate.getDayOfMonth();
+        }
     }
 }

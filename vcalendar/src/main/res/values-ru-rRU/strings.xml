@@ -1,10 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="weekday_mon">Пн</string>
-    <string name="weekday_tue">Вт</string>
-    <string name="weekday_wed">Ср</string>
-    <string name="weekday_thu">Чт</string>
-    <string name="weekday_fri">Пт</string>
-    <string name="weekday_sat">Сб</string>
-    <string name="weekday_sun">Вс</string>
+    <string-array name="weekdays">
+        <item>Пн</item>
+        <item>Вт</item>
+        <item>Ср</item>
+        <item>Чт</item>
+        <item>Пт</item>
+        <item>Сб</item>
+        <item>Вс</item>
+    </string-array>
 </resources>

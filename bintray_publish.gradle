@@ -2,14 +2,24 @@ if (hasProperty("bintrayApiKey") && hasProperty("bintrayUser")) {
 
     def pomDescription = "Advanced Android RecyclerView calendar"
 
-    task androidJavadocs(type: Javadoc) {
-        source = android.sourceSets.main.java.source
-        classpath += project.files(android.getBootClasspath().join(File.pathSeparator))
+    tasks.withType(Jar) {
+        from(project.projectDir) {
+            include 'LICENSE'
+            into 'META-INF'
+        }
     }
 
-    task androidJavadocsJar(type: Jar, dependsOn: androidJavadocs) {
+    task androidJavadoc(type: Javadoc) {
+        failOnError false
+        source = android.sourceSets.main.java.sourceFiles
+        classpath += project.files(android.getBootClasspath().join(File.pathSeparator))
+        classpath += configurations.compile
+    }
+
+// build a jar with javadoc
+    task androidJavadocJar(type: Jar, dependsOn: androidJavadoc) {
         classifier = 'javadoc'
-        from androidJavadocs.destinationDir
+        from androidJavadoc.destinationDir
     }
 
     task androidSourcesJar(type: Jar) {
@@ -20,10 +30,13 @@ if (hasProperty("bintrayApiKey") && hasProperty("bintrayUser")) {
     publishing {
         publications {
             vcalendar(MavenPublication) {
-                groupId "com.edwardstock"
+                groupId 'com.edwardstock'
                 artifactId 'vcalendar'
 
                 artifact("$buildDir/outputs/aar/vcalendar-release.aar")
+                artifact androidSourcesJar
+                artifact androidJavadocJar
+
                 version android.defaultConfig.versionName
 
                 pom.withXml {
@@ -83,6 +96,7 @@ if (hasProperty("bintrayApiKey") && hasProperty("bintrayUser")) {
                 vcsTag = android.defaultConfig.versionName
             }
         }
+        dryRun = true
         configurations = ['archives']
         override = true
         publications = ['vcalendar']
