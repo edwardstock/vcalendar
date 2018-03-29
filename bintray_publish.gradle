@@ -1,5 +1,8 @@
 if (hasProperty("bintrayApiKey") && hasProperty("bintrayUser")) {
 
+    group = 'com.edwardstock'
+    version = android.defaultConfig.versionName
+
     def pomDescription = "Advanced Android RecyclerView calendar"
 
     tasks.withType(Jar) {
@@ -30,7 +33,7 @@ if (hasProperty("bintrayApiKey") && hasProperty("bintrayUser")) {
     publishing {
         publications {
             vcalendar(MavenPublication) {
-                groupId 'com.edwardstock'
+                groupId this.group
                 artifactId 'vcalendar'
 
                 artifact("$buildDir/outputs/aar/vcalendar-release.aar")
@@ -91,12 +94,12 @@ if (hasProperty("bintrayApiKey") && hasProperty("bintrayUser")) {
             githubRepo = 'https://github.com/edwardstock/vcalendar.git'
             desc = pomDescription
             version {
-                name = android.defaultConfig.versionName
+                name = this.version
+                vcsTag = this.version
                 released = new Date()
-                vcsTag = android.defaultConfig.versionName
             }
         }
-        dryRun = true
+//        dryRun = true
         configurations = ['archives']
         override = true
         publications = ['vcalendar']
