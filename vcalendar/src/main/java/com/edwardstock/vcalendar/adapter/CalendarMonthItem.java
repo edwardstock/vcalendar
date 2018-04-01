@@ -18,6 +18,7 @@ import org.joda.time.DateTime;
 import org.joda.time.YearMonth;
 
 import java.lang.ref.WeakReference;
+import java.util.Arrays;
 import java.util.Calendar;
 
 /**
@@ -25,33 +26,55 @@ import java.util.Calendar;
  *
  * @author Eduard Maximovich <edward.vstock@gmail.com>
  */
-public class CalendarMonthItem implements MultiRowContract.Row<CalendarMonthItem.ViewHolder> {
+public class CalendarMonthItem implements CalendarAdapterContract.Row<CalendarMonthItem.ViewHolder> {
     private final DaysAdapter mDaysAdapter;
     private final YearMonth mMonth;
     private final WeakReference<CalendarHandler> mHandler;
     private OnBindListener mOnBindListener;
     private OnUnbindListener mOnUnbindListener;
-    public CalendarMonthItem(CalendarHandler calendarHandler, DateTime month, DaysAdapter.DayItemClickedListener dayItemClickedListener) {
-        mMonth = new YearMonth(month.withTime(0, 0, 0, 0).dayOfMonth().withMinimumValue());
+
+    public CalendarMonthItem(CalendarHandler calendarHandler, @NonNull DateTime month,
+                             DaysAdapter.DayItemClickedListener dayItemClickedListener) {
+        mMonth = new YearMonth(month);
         mHandler = new WeakReference<>(calendarHandler);
 
-        Calendar cal = Calendar.getInstance();
+        final Calendar cal = Calendar.getInstance();
         cal.set(Calendar.MONTH, month.getMonthOfYear() - 1);
         cal.set(Calendar.YEAR, month.getYear());
         cal.set(Calendar.DAY_OF_MONTH, month.dayOfMonth().withMaximumValue().getDayOfMonth());
         int weeksInMonth = cal.getActualMaximum(Calendar.WEEK_OF_MONTH);
 
+        int fromWeek = 0;
+        int toWeek = weeksInMonth;
+        if (calendarHandler.hasMinDate() && calendarHandler.isMinDateCutable() && equalsMonthYear(
+                calendarHandler.getMinDate(), month)) {
+            cal.set(Calendar.DAY_OF_MONTH, calendarHandler.getMinDate().getDayOfMonth());
+            fromWeek = cal.get(Calendar.WEEK_OF_MONTH);
+            if (fromWeek > 0) {
+                fromWeek--;
+            }
+        }
+        if (calendarHandler.hasMaxDate() && calendarHandler.isMaxDateCutable() && equalsMonthYear(
+                calendarHandler.getMaxDate(), month)) {
+            cal.set(Calendar.DAY_OF_MONTH, calendarHandler.getMaxDate().getDayOfMonth());
+            toWeek = cal.get(Calendar.WEEK_OF_MONTH);
+            if (toWeek < weeksInMonth) {
+                toWeek++;
+            }
+        }
+
         CalendarDay[][] weeksDaysWithOffset = new CalendarDay[weeksInMonth][7];
 
-        for (int weekNum = 0, dayNum = 1; weekNum < weeksInMonth; weekNum++) {
-            CalendarDay[] days = weeksDaysWithOffset[weekNum];
+        int maxMonthDay = month.dayOfMonth().withMaximumValue().getDayOfMonth();
+        for (int weekIdx = 0, dayNum = 1; weekIdx < weeksInMonth; weekIdx++) {
+            CalendarDay[] days = weeksDaysWithOffset[weekIdx];
             if (days == null) {
-                weeksDaysWithOffset[weekNum] = new CalendarDay[7];
-                days = weeksDaysWithOffset[weekNum];
+                weeksDaysWithOffset[weekIdx] = new CalendarDay[7];
+                days = weeksDaysWithOffset[weekIdx];
             }
 
             for (int dayIdx = 0; dayIdx < 7; dayIdx++, dayNum++) {
-                if (dayNum > month.dayOfMonth().withMaximumValue().getDayOfMonth()) {
+                if (dayNum > maxMonthDay) {
                     days[dayIdx] = null;
                     break;
                 }
@@ -66,10 +89,12 @@ public class CalendarMonthItem implements MultiRowContract.Row<CalendarMonthItem
             }
         }
 
+        if (fromWeek > 0 || toWeek < weeksInMonth) {
+            weeksDaysWithOffset = Arrays.copyOfRange(weeksDaysWithOffset, fromWeek, toWeek);
+        }
 
-        mDaysAdapter = new DaysAdapter(calendarHandler, weeksDaysWithOffset, getMonth());
+        mDaysAdapter = new DaysAdapter(calendarHandler, weeksDaysWithOffset);
         mDaysAdapter.setOnDayItemClickListener(dayItemClickedListener);
-
     }
 
     @Override
@@ -88,10 +113,12 @@ public class CalendarMonthItem implements MultiRowContract.Row<CalendarMonthItem
     @SuppressLint("DefaultLocale")
     @Override
     public String toString() {
-        return String.format("CalendarMonthItem{month=%s, weeks=%d}", mMonth.toString(), mDaysAdapter.getItemCount());
+        return String.format("CalendarMonthItem{month=%s, weeks=%d}", mMonth.toString(),
+                             mDaysAdapter.getItemCount());
     }
 
-    public CalendarMonthItem setLifecycle(OnBindListener bindListener, OnUnbindListener unbindListener) {
+    public CalendarMonthItem setLifecycle(OnBindListener bindListener,
+                                          OnUnbindListener unbindListener) {
         mOnBindListener = bindListener;
         mOnUnbindListener = unbindListener;
         return this;
@@ -109,7 +136,8 @@ public class CalendarMonthItem implements MultiRowContract.Row<CalendarMonthItem
     @SuppressLint("DefaultLocale")
     @Override
     public int getRowPosition() {
-        return Integer.parseInt(String.format("%04d%02d", mMonth.getYear(), mMonth.getMonthOfYear()));
+        return Integer.parseInt(
+                String.format("%04d%02d", mMonth.getYear(), mMonth.getMonthOfYear()));
     }
 
     public YearMonth getMonth() {
@@ -127,8 +155,11 @@ public class CalendarMonthItem implements MultiRowContract.Row<CalendarMonthItem
         Context context = viewHolder.itemView.getContext();
 
         if (isValidHandler()) {
-            viewHolder.monthName.setVisibility(mHandler.get().isEnabledLegend() ? View.VISIBLE : View.GONE);
-            viewHolder.monthName.setText(String.format("%s %d", mHandler.get().getMonthNames()[mMonth.getMonthOfYear() - 1], mMonth.getYear()));
+            viewHolder.monthName.setVisibility(
+                    mHandler.get().isEnabledLegend() ? View.VISIBLE : View.GONE);
+            viewHolder.monthName.setText(String.format("%s %d",
+                                                       mHandler.get().getMonthNames()[mMonth.getMonthOfYear() - 1],
+                                                       mMonth.getYear()));
 
             for (int i = 0; i < 7; i++) {
                 ((TextView) viewHolder.weekDaysLayout.getChildAt(i))
@@ -137,10 +168,13 @@ public class CalendarMonthItem implements MultiRowContract.Row<CalendarMonthItem
         }
 
 
-        LinearLayoutManager layoutManager = new LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false);
+        LinearLayoutManager layoutManager = new LinearLayoutManager(context,
+                                                                    LinearLayoutManager.VERTICAL,
+                                                                    false);
 
         if (viewHolder.list.getItemAnimator() instanceof SimpleItemAnimator) {
-            ((SimpleItemAnimator) viewHolder.list.getItemAnimator()).setSupportsChangeAnimations(false);
+            ((SimpleItemAnimator) viewHolder.list.getItemAnimator()).setSupportsChangeAnimations(
+                    false);
         }
         viewHolder.list.setLayoutManager(layoutManager);
         viewHolder.list.setNestedScrollingEnabled(false);
@@ -168,6 +202,10 @@ public class CalendarMonthItem implements MultiRowContract.Row<CalendarMonthItem
         return ViewHolder.class;
     }
 
+    private boolean equalsMonthYear(DateTime first, DateTime second) {
+        return first.getYear() == second.getYear() && first.getMonthOfYear() == second.getMonthOfYear();
+    }
+
     private boolean isValidHandler() {
         return mHandler != null && mHandler.get() != null;
     }
@@ -180,7 +218,7 @@ public class CalendarMonthItem implements MultiRowContract.Row<CalendarMonthItem
         void onUnbindMonth(YearMonth month);
     }
 
-    public static class ViewHolder extends MultiRowAdapter.RowViewHolder {
+    public static class ViewHolder extends RecyclerView.ViewHolder {
         RecyclerView list;
         TextView monthName;
         LinearLayout weekDaysLayout;

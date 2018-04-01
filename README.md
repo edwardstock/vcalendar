@@ -1,5 +1,7 @@
 # VCalendar - Advanced Android RecyclerView infinite calendar view
 
+[![Download](https://api.bintray.com/packages/edwardstock/vcalendar/vcalendar/images/download.svg?version=1.0.1) ](https://bintray.com/edwardstock/vcalendar/vcalendar/1.0.1/link)
+
 ## Features
  * Customzing everything and everywhere
  * Day decorators

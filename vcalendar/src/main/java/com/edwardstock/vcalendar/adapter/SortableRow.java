@@ -1,31 +1,22 @@
 package com.edwardstock.vcalendar.adapter;
 
 import android.support.annotation.NonNull;
+import android.support.v7.widget.RecyclerView;
 
 /**
  * Stars. 2017
  *
  * @author Eduard Maximovich <edward.vstock@gmail.com>
  */
-public class SortableRow<V extends MultiRowAdapter.RowViewHolder, T extends MultiRowContract.Row<V>> implements
-        MultiRowContract.Row<V> {
+public class SortableRow<V extends RecyclerView.ViewHolder, T extends CalendarAdapterContract.Row<V>> implements
+        CalendarAdapterContract.Row<V> {
 
     private T row;
-    private int position = 0;
-    private int previousPosition = -1;
+    private int position;
 
     public SortableRow(final T row, int position) {
         this.row = row;
         this.position = position;
-    }
-
-    public void setPosition(int position) {
-        this.previousPosition = this.position;
-        this.position = position;
-    }
-
-    public boolean isInserted() {
-        return previousPosition == -1;
     }
 
     public T getRow() {
@@ -54,7 +45,7 @@ public class SortableRow<V extends MultiRowAdapter.RowViewHolder, T extends Mult
 
     @Override
     public void onUnbindViewHolder(@NonNull V viewHolder) {
-
+        row.onUnbindViewHolder(viewHolder);
     }
 
     @NonNull
@@ -63,17 +54,13 @@ public class SortableRow<V extends MultiRowAdapter.RowViewHolder, T extends Mult
         return row.getViewHolderClass();
     }
 
-    public int getPreviousPosition() {
-        return previousPosition;
-    }
-
     @Override
     public boolean equals(Object obj) {
-        if (obj instanceof MultiRowContract.Row) {
-            return ((MultiRowContract.Row) obj).getRowPosition() == getRowPosition()
-                    && ((MultiRowContract.Row) obj).getItemView() == getItemView()
-                    && ((MultiRowContract.Row) obj).isVisible() == isVisible()
-                    && ((MultiRowContract.Row) obj).getViewHolderClass() == getViewHolderClass();
+        if (obj instanceof CalendarAdapterContract.Row) {
+            return ((CalendarAdapterContract.Row) obj).getRowPosition() == getRowPosition()
+                    && ((CalendarAdapterContract.Row) obj).getItemView() == getItemView()
+                    && ((CalendarAdapterContract.Row) obj).isVisible() == isVisible()
+                    && ((CalendarAdapterContract.Row) obj).getViewHolderClass() == getViewHolderClass();
         }
 
         return row.equals(obj);

@@ -3,29 +3,14 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:baselineAligned="false"
     android:orientation="horizontal">
 
     <include
         style="@style/VCalendar.Day"
         layout="@layout/item_day"
         android:layout_width="0dp"
-        android:layout_height="34dp"
-        android:layout_weight="1"
-        />
-
-    <include
-        style="@style/VCalendar.Day"
-        layout="@layout/item_day"
-        android:layout_width="0dp"
-        android:layout_height="34dp"
-        android:layout_weight="1"
-        />
-
-    <include
-        style="@style/VCalendar.Day"
-        layout="@layout/item_day"
-        android:layout_width="0dp"
-        android:layout_height="34dp"
+        android:layout_height="@dimen/vcal_day_height"
         android:layout_weight="1"
         />
 
@@ -41,7 +26,7 @@
         style="@style/VCalendar.Day"
         layout="@layout/item_day"
         android:layout_width="0dp"
-        android:layout_height="34dp"
+        android:layout_height="@dimen/vcal_day_height"
         android:layout_weight="1"
         />
 
@@ -49,7 +34,7 @@
         style="@style/VCalendar.Day"
         layout="@layout/item_day"
         android:layout_width="0dp"
-        android:layout_height="34dp"
+        android:layout_height="@dimen/vcal_day_height"
         android:layout_weight="1"
         />
 
@@ -57,7 +42,23 @@
         style="@style/VCalendar.Day"
         layout="@layout/item_day"
         android:layout_width="0dp"
-        android:layout_height="34dp"
+        android:layout_height="@dimen/vcal_day_height"
+        android:layout_weight="1"
+        />
+
+    <include
+        style="@style/VCalendar.Day"
+        layout="@layout/item_day"
+        android:layout_width="0dp"
+        android:layout_height="@dimen/vcal_day_height"
+        android:layout_weight="1"
+        />
+
+    <include
+        style="@style/VCalendar.Day"
+        layout="@layout/item_day"
+        android:layout_width="0dp"
+        android:layout_height="@dimen/vcal_day_height"
         android:layout_weight="1"
         />
 

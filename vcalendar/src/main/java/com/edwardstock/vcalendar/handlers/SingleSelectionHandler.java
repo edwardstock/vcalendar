@@ -33,7 +33,18 @@ public class SingleSelectionHandler extends BaseHandler {
     }
 
     private void setSelectionsInternal(CalendarDay calendarDay) {
-        getDispatcher().clearSelections();
+        getDispatcher().clearSelectionsInternal();
+
+        if (getDispatcher().selectionClickCount == 1) {
+            getDispatcher().selectionClickCount = 0;
+            if (!getDispatcher().isEnableContinuousSelection()) {
+                getDispatcher().callOnSelectionListeners(
+                        getDispatcher().getSelections().size() == getDispatcher().getLimit());
+                return;
+            }
+        }
+        getDispatcher().selectionClickCount++;
+
         calendarDay.setSelected(true);
         getDispatcher().getSelections().add(calendarDay);
 

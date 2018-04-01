@@ -1,9 +1,6 @@
 #!/usr/bin/env bash
 
 ./gradlew :clean
-./gradlew :vcalendar:assemble
-./gradlew :vcalendar:generatePomFileForVcalendarPublication
-./gradlew :vcalendar:androidJavadocJar
-./gradlew :vcalendar:androidJavadocJar
+./gradlew :vcalendar:assemble :vcalendar:generatePomFileForVcalendarPublication :vcalendar:androidSourcesJar :vcalendar:androidJavadoc :vcalendar:androidJavadocJar
 ./gradlew :vcalendar:publishToMavenLocal
-./gradlew :vcalendar:bintrayUpload
+#./gradlew :vcalendar:bintrayUpload --info

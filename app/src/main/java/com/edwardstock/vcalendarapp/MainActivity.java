@@ -4,17 +4,20 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
 
+import com.annimon.stream.Stream;
+import com.edwardstock.vcalendar.OnSelectionListener;
 import com.edwardstock.vcalendar.SelectionMode;
 import com.edwardstock.vcalendar.VCalendar;
 import com.edwardstock.vcalendar.adapter.DayViewFacade;
 import com.edwardstock.vcalendar.decorators.ConnectedDayDecorator;
-import com.edwardstock.vcalendar.decorators.DefaultDayDecorator;
 import com.edwardstock.vcalendar.models.CalendarDay;
 
 import org.joda.time.DateTime;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import timber.log.Timber;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -26,50 +29,42 @@ public class MainActivity extends AppCompatActivity {
         VCalendar calendar = findViewById(R.id.cal);
         calendar.getSelectionDispatcher().setMode(SelectionMode.RANGE);
 
-        calendar.addDayDecorator(new DefaultDayDecorator());
-        calendar.addDayDecorator(new CustomDecor(new DateTime("2018-03-27")));
+        calendar.setInitialMonth("2018-03");
+        calendar.setMinDate(new DateTime().minusDays(3)).setMinDateCut(true);
+        calendar.reset();
 
 
-        //        List<DateTime> selections = new ArrayList<>(2);
-        //        calendar.setInitialDate("2018-05-10");
-        //        selections.add(new DateTime("2018-05-10"));
-        //        selections.add(new DateTime("2018-05-20"));
-        //        calendar.getSelectionDispatcher().setSelections(selections);
-        //
-        //        calendar.getSelectionDispatcher().addOnSelectionListener(new OnSelectionListener() {
-        //            @Override
-        //            public void onSelected(List<CalendarDay> calendarDays, boolean limitExceeded) {
-        //                Stream.of(calendarDays).forEach(item -> Timber.d(item.toString()));
-        //            }
-        //        });
-        //
-        //        calendar.addOnMonthAddListener(month -> Timber.d("Append month: %s", month.toString()));
-        //        calendar.addOnMonthBindListener(month -> Timber.d("Bind month: %s", month.toString()));
-        //        calendar.addOnMonthUnbindListener(month -> Timber.d("Unbind month: %s", month.toString()));
-        //
-        //
+        calendar.getSelectionDispatcher().setEnableContinuousSelection(false);
+
+        calendar.getSelectionDispatcher().addOnSelectionListener(new OnSelectionListener() {
+            @Override
+            public void onSelected(List<CalendarDay> calendarDays, boolean limitExceeded) {
+                Stream.of(calendarDays).forEach(item -> Timber.d(item.toString()));
+            }
+        });
+        calendar.addOnMonthAddListener(month -> Timber.d("Append month: %s", month.toString()));
+        calendar.addOnMonthBindListener(month -> Timber.d("Bind month: %s", month.toString()));
+        calendar.addOnMonthUnbindListener(month -> Timber.d("Unbind month: %s", month.toString()));
+
+
         new Handler().postDelayed(() -> {
-            List<DateTime> dates = new ArrayList<>(5);
-
-            for (int i = 0; i < 5; i++) {
-                dates.add(new DateTime().plusDays(i + 1));
-                calendar.getDayOrCreate(new DateTime().plusDays(i + 1)).setSelected(true);
+            Timber.d("Update in thread: %s", Thread.currentThread().getName());
+            List<DateTime> toUpdate = new ArrayList<>(40);
+            DateTime today = new DateTime();
+            for (int i = today.getDayOfMonth(); i < 40; i++) {
+                toUpdate.add(today.plusDays(i));
             }
-            try {
-                Thread.sleep(1000);
-                calendar.updateDays(dates);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
+            calendar.updateDays(toUpdate);
+        }, 3000);
 
-        }, 5000);
+
     }
 
-    public final static class CustomDecor extends ConnectedDayDecorator {
+    public final static class CustomDecorator extends ConnectedDayDecorator {
 
         private DateTime mShouldDate;
 
-        CustomDecor(DateTime dt) {
+        CustomDecorator(DateTime dt) {
             mShouldDate = dt;
         }
 

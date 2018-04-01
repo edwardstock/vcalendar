@@ -13,13 +13,11 @@ import android.widget.TextView;
 
 import com.annimon.stream.Stream;
 import com.edwardstock.vcalendar.CalendarHandler;
-import com.edwardstock.vcalendar.R;
 import com.edwardstock.vcalendar.SelectionMode;
+import com.edwardstock.vcalendar.decorators.DefaultDayDecorator;
 import com.edwardstock.vcalendar.models.CalendarDay;
-import com.edwardstock.vcalendar.widgets.SquareTextView;
 
 import org.joda.time.DateTime;
-import org.joda.time.YearMonth;
 
 import java.lang.ref.WeakReference;
 import java.util.Map;
@@ -39,17 +37,20 @@ import static com.edwardstock.vcalendar.common.Preconditions.checkNotNull;
  */
 public class DaysAdapter extends RecyclerView.Adapter<DaysAdapter.WeekHolder> {
     private final CalendarDay[][] mData;
-    private final YearMonth mMonth;
+    private final DefaultDayDecorator mDefaultDayDecorator = new DefaultDayDecorator();
     private LayoutInflater mInflater;
     private WeakReference<Context> mContext;
     private WeakReference<CalendarHandler> mCalendarHandler;
     private DayItemClickedListener mDayItemClickedListener;
     private Map<Integer, DayIndex> mDayIndex = new ArrayMap<>();
 
-    public DaysAdapter(@NonNull CalendarHandler calendarHandler, @NonNull final CalendarDay[][] weeksDays, YearMonth month) {
+    public DaysAdapter(@NonNull CalendarHandler calendarHandler,
+                       @NonNull final CalendarDay[][] weeksDays) {
         mCalendarHandler = new WeakReference<>(checkNotNull(calendarHandler, "Calendar delegate can't be null"));
         mData = checkNotNull(weeksDays, "Days can't be null");
-        mMonth = month;
+        if (mData.length == 0) {
+            throw new IllegalArgumentException("Days can't be empty!");
+        }
     }
 
     public void setOnDayItemClickListener(DayItemClickedListener listener) {
@@ -59,15 +60,14 @@ public class DaysAdapter extends RecyclerView.Adapter<DaysAdapter.WeekHolder> {
     @NonNull
     @Override
     public WeekHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        if (mInflater == null) {
-            mInflater = LayoutInflater.from(parent.getContext());
-        }
-
         if (!isValidContext()) {
             mContext = new WeakReference<>(parent.getContext());
         }
+        if (mInflater == null) {
+            mInflater = LayoutInflater.from(mContext.get());
+        }
 
-        View view = mInflater.inflate(R.layout.item_week, parent, false);
+        View view = mInflater.inflate(mCalendarHandler.get().getWeekLayoutRes(), parent, false);
         WeekHolder holder = new WeekHolder(view);
 
         if (mDayItemClickedListener != null) {
@@ -87,8 +87,6 @@ public class DaysAdapter extends RecyclerView.Adapter<DaysAdapter.WeekHolder> {
     @Override
     public void onBindViewHolder(@NonNull WeekHolder holder, int position) {
         final CalendarDay[] days = mData[position];
-        Timber.d("Bind week %d in month %s", position + 1, mMonth.toString());
-
         Stream.of(days).forEachIndexed((idx, calendarDay) -> {
             final TextView tv = holder.days[idx];
             if (days[idx] == null) {
@@ -132,6 +130,10 @@ public class DaysAdapter extends RecyclerView.Adapter<DaysAdapter.WeekHolder> {
 
     public void update(DateTime dateTime) {
         DayIndex index = getOrCreateIndex(dateTime.getDayOfMonth());
+        if (index == null) {
+            Timber.i("Day not found: %s", dateTime.toString());
+            return;
+        }
         notifyItemChanged(index.weekIdx, index);
     }
 
@@ -152,9 +154,18 @@ public class DaysAdapter extends RecyclerView.Adapter<DaysAdapter.WeekHolder> {
     }
 
     private DayIndex createIndex(int dayNum) {
-        int closerWeek = (int) ((float) dayNum / 7f);
+        // wtf ask you? ok, so try to find 7 day in first week.
+        // if we just divide 7/7 than we will have 1, first week?
+        // yes, but index of first week must be 0,
+        // so 14 day will be 3rd week, not the second, but 14 day is a sunday
+        // and it can't be in the next week..
+        int closerWeek = (int) (((float) dayNum - 0.1f) / 7f);
 
         DayIndex index = null;
+
+        if (closerWeek > mData.length) {
+            closerWeek = 0;
+        }
 
         if (mData[closerWeek][0] != null && mData[closerWeek][0].getDay() == dayNum) {
             index = new DayIndex(closerWeek, 0);
@@ -174,7 +185,7 @@ public class DaysAdapter extends RecyclerView.Adapter<DaysAdapter.WeekHolder> {
 
         //noinspection ConstantConditions
         if (index == null) {
-            throw new RuntimeException(String.format("Unable to find day %d in month %s", dayNum, mMonth.toString()));
+            return null;
         }
 
         mDayIndex.put(dayNum, index);
@@ -246,6 +257,11 @@ public class DaysAdapter extends RecyclerView.Adapter<DaysAdapter.WeekHolder> {
         facade.setSelectedState(day.isSelected());
 
         boolean isRange = mCalendarHandler.get().getSelectionDispatcher().getMode() == SelectionMode.RANGE;
+        if (mCalendarHandler.get().isEnabledDefaultDecorator()) {
+            if (mDefaultDayDecorator.shouldDecorate(day)) {
+                mDefaultDayDecorator.decorate(day, facade, neighbourhood);
+            }
+        }
         Stream.of(mCalendarHandler.get().getDayDecorators())
                 .filter(item -> item.shouldDecorate(day))
                 .forEach(item -> item.decorate(day, facade, isRange ? neighbourhood : Neighbourhood.NO_NEIGHBOURS));
@@ -285,13 +301,17 @@ public class DaysAdapter extends RecyclerView.Adapter<DaysAdapter.WeekHolder> {
         public WeekHolder(View itemView) {
             super(itemView);
             final ViewGroup vg = ((ViewGroup) itemView);
-            days[0] = ((SquareTextView) vg.getChildAt(0));
-            days[1] = ((SquareTextView) vg.getChildAt(1));
-            days[2] = ((SquareTextView) vg.getChildAt(2));
-            days[3] = ((SquareTextView) vg.getChildAt(3));
-            days[4] = ((SquareTextView) vg.getChildAt(4));
-            days[5] = ((SquareTextView) vg.getChildAt(5));
-            days[6] = ((SquareTextView) vg.getChildAt(6));
+            if (vg.getChildCount() != 7) {
+                throw new IllegalStateException(
+                        "Invalid week layout passed to days adapter! Layout MUST contains exact 7 TextView children.");
+            }
+            days[0] = ((TextView) vg.getChildAt(0));
+            days[1] = ((TextView) vg.getChildAt(1));
+            days[2] = ((TextView) vg.getChildAt(2));
+            days[3] = ((TextView) vg.getChildAt(3));
+            days[4] = ((TextView) vg.getChildAt(4));
+            days[5] = ((TextView) vg.getChildAt(5));
+            days[6] = ((TextView) vg.getChildAt(6));
         }
     }
 }

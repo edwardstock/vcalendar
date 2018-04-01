@@ -1,6 +1,7 @@
 package com.edwardstock.vcalendar;
 
 import android.support.annotation.DrawableRes;
+import android.support.annotation.LayoutRes;
 import android.support.annotation.NonNull;
 
 import com.edwardstock.vcalendar.decorators.DayDecorator;
@@ -20,6 +21,12 @@ public interface CalendarHandler {
 
     CalendarDay getDay(DateTime dateTime);
     CalendarDay getDayOrCreate(DateTime dateTime);
+    boolean isMinDateCutable();
+    boolean isMaxDateCutable();
+    DateTime getMinDate();
+    DateTime getMaxDate();
+    boolean hasMinDate();
+    boolean hasMaxDate();
     @NonNull CalendarDay getPreviousDay(CalendarDay current);
     @NonNull CalendarDay getNextDay(CalendarDay current);
     @DrawableRes int getSelectedMiddleBackgroundRes();
@@ -31,4 +38,7 @@ public interface CalendarHandler {
     boolean isEnabledLegend();
     String[] getMonthNames();
     String[] getDaysOfWeek();
+    boolean isEnabledDefaultDecorator();
+    @LayoutRes
+    int getWeekLayoutRes();
 }

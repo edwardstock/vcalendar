@@ -38,8 +38,14 @@ public final class RangeSelectionHandler extends BaseHandler {
     public void onClick(View dayView, CalendarDay calendarDay) {
         // reset selections after second click and select last selected day
         if (getDispatcher().selectionClickCount == 2) {
-            getDispatcher().clearSelections();
+            getDispatcher().clearSelectionsInternal();
             getDispatcher().selectionClickCount = 0;
+
+            if (!getDispatcher().isEnableContinuousSelection()) {
+                getDispatcher().callOnSelectionListeners(
+                        getDispatcher().getSelections().size() == getDispatcher().getLimit());
+                return;
+            }
         }
         getDispatcher().selectionClickCount++;
 
@@ -76,7 +82,7 @@ public final class RangeSelectionHandler extends BaseHandler {
             long diff = duration.getStandardDays();
 
             // clear current selections
-            getDispatcher().clearSelections();
+            getDispatcher().clearSelectionsInternal();
 
             // writing all range by new, with intermediate dates
             for (int i = -1; i < diff; i++) {

@@ -10,8 +10,8 @@ import android.support.v7.widget.RecyclerView;
  * @author Eduard Maximovich <edward.vstock@gmail.com>
  */
 
-public interface MultiRowContract {
-    interface Row<T extends MultiRowAdapter.RowViewHolder> {
+public interface CalendarAdapterContract {
+    interface Row<T extends RecyclerView.ViewHolder> {
         int POSITION_FIRST = -1;
         int POSITION_LAST = 999;
         int POSITION_ORDERED = 0;
@@ -20,7 +20,7 @@ public interface MultiRowContract {
          * views ID
          *
          * @return int
-         * @see MultiRowAdapter#makeHoldersCache()
+         * @see CalendarAdapter#makeHoldersCache()
          */
         @LayoutRes
         int getItemView();
@@ -29,8 +29,8 @@ public interface MultiRowContract {
          * views position index
          *
          * @return int
-         * @see MultiRowAdapter
-         * @see MultiRowContract.Row
+         * @see CalendarAdapter
+         * @see CalendarAdapterContract.Row
          */
         int getRowPosition();
 
@@ -42,26 +42,26 @@ public interface MultiRowContract {
         boolean isVisible();
 
         /**
-         * Вызывается когда адаптер биндит вьюху,
-         * соответственно в этом методе заполняем ViewHolder
+         * calling when adapter binds view
+         * @see RecyclerView.Adapter#onBindViewHolder(RecyclerView.ViewHolder, int)
          *
          * @param viewHolder Row view holder
-         * @see MultiRowAdapter#makeHoldersCache()
+         * @see CalendarAdapter#makeHoldersCache()
          */
         void onBindViewHolder(@NonNull T viewHolder);
 
         /**
-         * Вызывается когда холдер отцепляется от окна
+         *
          * @see RecyclerView#onDetachedFromWindow()
          * @param viewHolder
          */
         void onUnbindViewHolder(@NonNull T viewHolder);
 
         /**
-         * Класс ViewHolder'а который отражает вьюху
+         * View holder class name
          *
          * @return Class
-         * @see MultiRowAdapter.RowViewHolder
+         * @see CalendarAdapter.RowViewHolder
          */
         @NonNull
         Class<T> getViewHolderClass();

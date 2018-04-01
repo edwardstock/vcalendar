@@ -1,11 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <declare-styleable name="VCalendar">
-        <attr name="initialDate" format="string"/>
+        <attr name="initialMonth" format="string"/>
+        <attr name="minDate" format="string"/>
+        <attr name="maxDate" format="string"/>
+        <attr name="minDateCut" format="boolean"/>
+        <attr name="maxDateCut" format="boolean"/>
         <attr name="selectionBeginBackground" format="reference"/>
         <attr name="selectionMiddleBackground" format="reference"/>
         <attr name="selectionEndBackground" format="reference"/>
         <attr name="selectionSingleBackground" format="reference"/>
+        <attr name="weekLayoutRes" format="reference"/>
         <attr name="selectionMode" format="enum">
             <enum name="none" value="0"/>
             <enum name="single" value="1"/>
@@ -20,5 +25,6 @@
         <attr name="enableDefaultDecorator" format="boolean"/>
         <attr name="monthNamesArray" format="reference"/>
         <attr name="daysOfWeekNamesArray" format="reference"/>
+
     </declare-styleable>
 </resources>

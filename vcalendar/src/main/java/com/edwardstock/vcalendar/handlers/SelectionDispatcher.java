@@ -39,10 +39,20 @@ public final class SelectionDispatcher implements OnDayClickListener {
     private Map<Integer, BaseHandler> mHandlers = new HashMap<>();
     private List<OnSelectionListener> mOnSelectionListeners = new ArrayList<>();
     private int mMode;
-
+    private boolean mContinuousSelection = true;
+    private boolean mClickable = true;
 
     public SelectionDispatcher(Delegate delegate) {
         mDelegate = delegate;
+    }
+
+    /**
+     * Enabled by default
+     *
+     * @param enable
+     */
+    public final void setEnableContinuousSelection(boolean enable) {
+        mContinuousSelection = enable;
     }
 
     public final void addOnSelectionListener(OnSelectionListener listener) {
@@ -159,12 +169,8 @@ public final class SelectionDispatcher implements OnDayClickListener {
     }
 
     public void clearSelections() {
-        mDelegate.onClear();
-        Stream.of(mSelections)
-                .map(item -> mDelegate.getDayOrCreate(item.getDateTime()))
-                .forEach(item -> item.setSelected(false));
-        mSelections.clear();
-//        mDelegate.onUpdate();
+        clearSelectionsInternal();
+        selectionClickCount = 0;
     }
 
     public CalendarDay getDayOrCreate(DateTime dateTime) {
@@ -252,7 +258,26 @@ public final class SelectionDispatcher implements OnDayClickListener {
         return new ArrayList<>(mSelections);
     }
 
+    public boolean isEnableContinuousSelection() {
+        return mContinuousSelection;
+    }
+
+    public final void setClickable(boolean clickable) {
+        mClickable = clickable;
+    }
+
+    void clearSelectionsInternal() {
+        mDelegate.onClear();
+        Stream.of(mSelections)
+                .map(item -> mDelegate.getDayOrCreate(item.getDateTime()))
+                .forEach(item -> item.setSelected(false));
+        mSelections.clear();
+    }
+
     final void callOnSelectionListeners(boolean isLimitExceeded) {
+        if (!mClickable) {
+            return;
+        }
         final Set<CalendarDay> s = new TreeSet<>(getSelections());
         for (OnSelectionListener l : mOnSelectionListeners) {
             l.onSelected(new ArrayList<>(s), isLimitExceeded);

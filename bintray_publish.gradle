@@ -39,7 +39,6 @@ if (hasProperty("bintrayApiKey") && hasProperty("bintrayUser")) {
                 artifact("$buildDir/outputs/aar/vcalendar-release.aar")
                 artifact androidSourcesJar
                 artifact androidJavadocJar
-
                 version android.defaultConfig.versionName
 
                 pom.withXml {
