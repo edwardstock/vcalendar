@@ -1,12 +1,8 @@
 package com.edwardstock.vcalendarapp;
 
 import android.os.Bundle;
-import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
 
-import com.annimon.stream.Stream;
-import com.edwardstock.vcalendar.OnSelectionListener;
-import com.edwardstock.vcalendar.SelectionMode;
 import com.edwardstock.vcalendar.VCalendar;
 import com.edwardstock.vcalendar.adapter.DayViewFacade;
 import com.edwardstock.vcalendar.decorators.ConnectedDayDecorator;
@@ -17,8 +13,6 @@ import org.joda.time.DateTime;
 import java.util.ArrayList;
 import java.util.List;
 
-import timber.log.Timber;
-
 public class MainActivity extends AppCompatActivity {
 
     @Override
@@ -27,35 +21,46 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         VCalendar calendar = findViewById(R.id.cal);
-        calendar.getSelectionDispatcher().setMode(SelectionMode.RANGE);
 
-        calendar.setInitialMonth("2018-03");
-        calendar.setMinDate(new DateTime().minusDays(3)).setMinDateCut(true);
-        calendar.reset();
+//	    calendar.getSelectionDispatcher().addOnSelectionListener(this);
+	    calendar.getSelectionDispatcher().setDisabledBeforeDate(new DateTime());
+	    calendar.setMinDate(new DateTime());
 
+	    if (true) {
+		    List<DateTime> selections = new ArrayList<>();
+		    selections.add(new DateTime().withMonthOfYear(6).withDayOfMonth(1));
+		    selections.add(new DateTime().withMonthOfYear(6).withDayOfMonth(2));
 
-        calendar.getSelectionDispatcher().setEnableContinuousSelection(false);
-
-        calendar.getSelectionDispatcher().addOnSelectionListener(new OnSelectionListener() {
-            @Override
-            public void onSelected(List<CalendarDay> calendarDays, boolean limitExceeded) {
-                Stream.of(calendarDays).forEach(item -> Timber.d(item.toString()));
-            }
-        });
-        calendar.addOnMonthAddListener(month -> Timber.d("Append month: %s", month.toString()));
-        calendar.addOnMonthBindListener(month -> Timber.d("Bind month: %s", month.toString()));
-        calendar.addOnMonthUnbindListener(month -> Timber.d("Unbind month: %s", month.toString()));
+		    if (selections.size() > 0) {
+			    calendar.setInitialMonth(selections.get(0));
+		    }
+		    calendar.getSelectionDispatcher().setSelections(selections);
+//		    onSelected(calendar.getSelectionDispatcher().getSelections(), false);
+	    }
 
 
-        new Handler().postDelayed(() -> {
-            Timber.d("Update in thread: %s", Thread.currentThread().getName());
-            List<DateTime> toUpdate = new ArrayList<>(40);
-            DateTime today = new DateTime();
-            for (int i = today.getDayOfMonth(); i < 40; i++) {
-                toUpdate.add(today.plusDays(i));
-            }
-            calendar.updateDays(toUpdate);
-        }, 3000);
+//        calendar.getSelectionDispatcher().setEnableContinuousSelection(false);
+//
+//        calendar.getSelectionDispatcher().addOnSelectionListener(new OnSelectionListener() {
+//            @Override
+//            public void onSelected(List<CalendarDay> calendarDays, boolean limitExceeded) {
+//                Stream.of(calendarDays).forEach(item -> Timber.d(item.toString()));
+//            }
+//        });
+//        calendar.addOnMonthAddListener(month -> Timber.d("Append month: %s", month.toString()));
+//        calendar.addOnMonthBindListener(month -> Timber.d("Bind month: %s", month.toString()));
+//        calendar.addOnMonthUnbindListener(month -> Timber.d("Unbind month: %s", month.toString()));
+//
+//
+//        new Handler().postDelayed(() -> {
+//            Timber.d("Update in thread: %s", Thread.currentThread().getName());
+//            List<DateTime> toUpdate = new ArrayList<>(40);
+//            DateTime today = new DateTime();
+//            for (int i = today.getDayOfMonth(); i < 40; i++) {
+//                toUpdate.add(today.plusDays(i));
+//            }
+//            calendar.updateDays(toUpdate);
+//        }, 3000);
 
 
     }

@@ -1,7 +1,11 @@
-plugins {
-    id 'com.android.library'
-    id 'maven-publish'
-    id "com.jfrog.bintray" version "1.7.3"
+apply plugin: 'com.android.library'
+apply plugin: 'maven'
+apply plugin: 'maven-publish'
+apply plugin: 'com.jfrog.artifactory'
+
+ext {
+    group "com.edwardstock.android"
+    version "1.2.0"
 }
 
 android {
@@ -10,8 +14,8 @@ android {
     defaultConfig {
         minSdkVersion 18
         targetSdkVersion 27
-        versionCode 2
-        versionName "1.1.0"
+        versionCode 3
+        versionName "1.2.0"
 
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
@@ -35,7 +39,7 @@ android {
     }
 }
 
-ext.libSupport = "27.1.0"
+ext.libSupport = "27.1.1"
 
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
@@ -50,8 +54,8 @@ dependencies {
     }
     implementation 'com.annimon:stream:1.1.9'
     testImplementation 'junit:junit:4.12'
-    androidTestImplementation 'com.android.support.test:runner:1.0.1'
-    androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.1'
+    androidTestImplementation 'com.android.support.test:runner:1.0.2'
+    androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
 }
 
 apply from: '../bintray_publish.gradle'

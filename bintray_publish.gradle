@@ -1,54 +1,58 @@
-if (hasProperty("bintrayApiKey") && hasProperty("bintrayUser")) {
+// DEFS
+def pomDescription = (hasProperty("pomDescription") ? getProperty("pomDescription") : "Advanced Android RecyclerView calendar")
+group = (hasProperty("group") ? getProperty("group") : 'com.edwardstock.android')
+version = android.defaultConfig.versionName
+def releaseGroup = this.group
+def releaseVersion = this.version
+def releaseArtifactId = project.name
 
-    group = 'com.edwardstock'
-    version = android.defaultConfig.versionName
-
-    def pomDescription = "Advanced Android RecyclerView calendar"
-
-    tasks.withType(Jar) {
-        from(project.projectDir) {
-            include 'LICENSE'
-            into 'META-INF'
-        }
+// TASKS
+tasks.withType(Jar) {
+    from(project.projectDir) {
+        include 'LICENSE'
+        into 'META-INF'
     }
+}
 
-    task androidJavadoc(type: Javadoc) {
-        failOnError false
-        source = android.sourceSets.main.java.sourceFiles
-        classpath += project.files(android.getBootClasspath().join(File.pathSeparator))
-        classpath += configurations.compile
-    }
+task androidJavadoc(type: Javadoc) {
+    failOnError false
+    source = android.sourceSets.main.java.sourceFiles
+    classpath += project.files(android.getBootClasspath().join(File.pathSeparator))
+    classpath += configurations.compile
+}
 
 // build a jar with javadoc
-    task androidJavadocJar(type: Jar, dependsOn: androidJavadoc) {
-        classifier = 'javadoc'
-        from androidJavadoc.destinationDir
-    }
+task androidJavadocJar(type: Jar, dependsOn: androidJavadoc) {
+    classifier = 'javadoc'
+    from androidJavadoc.destinationDir
+}
 
-    task androidSourcesJar(type: Jar) {
-        classifier = 'sources'
-        from android.sourceSets.main.java.source
-    }
+task androidSourcesJar(type: Jar) {
+    classifier = 'sources'
+    from android.sourceSets.main.java.source
+}
+
+if (hasProperty("artifactoryUser") && hasProperty("artifactoryPass")) {
 
     publishing {
         publications {
-            vcalendar(MavenPublication) {
-                groupId this.group
-                artifactId 'vcalendar'
+            "${releaseArtifactId}"(MavenPublication) {
+                groupId releaseGroup
+                artifactId releaseArtifactId
+                version releaseVersion
 
-                artifact("$buildDir/outputs/aar/vcalendar-release.aar")
+                // Tell maven to prepare the generated "*.aar" file for publishing
+                artifact("$buildDir/outputs/aar/${releaseArtifactId}-release.aar")
                 artifact androidSourcesJar
                 artifact androidJavadocJar
-                version android.defaultConfig.versionName
 
                 pom.withXml {
                     asNode().appendNode("description", pomDescription)
                     def licenses = asNode().appendNode("licenses")
                     def mitLicense = licenses.appendNode("license")
                     mitLicense.appendNode("name", "MIT License")
-                    mitLicense.appendNode("url", "https://github.com/edwardstock/vcalendar/blob/master/LICENSE")
+                    mitLicense.appendNode("url", "https://opensource.org/licenses/MIT")
                     mitLicense.appendNode("distribution", "repo")
-                    mitLicense.appendNode("comments", "Absolutely free license.")
 
                     def developer = asNode().appendNode("developers").appendNode("developer")
                     developer.appendNode("id", "edwardstock")
@@ -70,39 +74,31 @@ if (hasProperty("bintrayApiKey") && hasProperty("bintrayUser")) {
                             dependencyNode.appendNode('version', it.version)
                         }
                     }
-
-
                 }
             }
         }
     }
 
-    println("Bintray user "+bintrayUser)
-    println("Bintray key " + bintrayApiKey)
+    artifactory {
+        contextUrl = getProperty("artifactoryUrl")
+        publish {
+            repository {
+                version = releaseVersion
+                repoKey = "libs-release-local"
+                username = getProperty("artifactoryUser")
+                password = getProperty("artifactoryPass")
+                maven = true
+            }
 
-    bintray {
-        user = bintrayUser
-        key = bintrayApiKey
-        pkg {
-            repo = 'vcalendar'
-            name = 'vcalendar'
-            publish = true
-            publicDownloadNumbers = true
-            licenses = ['MIT']
-            vcsUrl = 'https://github.com/edwardstock/vcalendar.git'
-            githubRepo = 'https://github.com/edwardstock/vcalendar.git'
-            desc = pomDescription
-            version {
-                name = this.version
-                vcsTag = this.version
-                released = new Date()
+            defaults {
+                publications(releaseArtifactId)
+                publishConfigs('archives')
+                properties = ['qa.level': 'basic', 'q.os': 'android', 'dev.team': 'core']
+                publishBuildInfo = true
+                publishArtifacts = true
+                publishPom = true
+                publishIvy = false
             }
         }
-//        dryRun = true
-        configurations = ['archives']
-        override = true
-        publications = ['vcalendar']
     }
-} else {
-    println "System has no bintray user"
 }

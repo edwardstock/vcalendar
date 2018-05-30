@@ -1,6 +1,6 @@
 # VCalendar - Advanced Android RecyclerView infinite calendar view
 
-[![Download](https://api.bintray.com/packages/edwardstock/vcalendar/vcalendar/images/download.svg?version=1.0.1) ](https://bintray.com/edwardstock/vcalendar/vcalendar/1.0.1/link)
+[ ![Download](https://api.bintray.com/packages/edwardstock/vcalendar/vcalendar/images/download.svg?version=1.1.0) ](https://bintray.com/edwardstock/vcalendar/vcalendar/1.1.0/link)
 
 ## Features
  * Customzing everything and everywhere
@@ -29,9 +29,7 @@ dependencies {
 If you already have android implementation of JodaTime, and/or probably you have error "Program type already present: org.joda.time.Chronology" or something like this, than add instead this lines:
 ```groovy
 implementation ('com.edwardstock:vcalendar:1.0.0') {
-    exclude group: 'joda-time'
-}
-```
+ 
 
 
 ## Using
