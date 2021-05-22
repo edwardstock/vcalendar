@@ -1,18 +1,17 @@
 package com.edwardstock.vcalendar.adapter;
 
-import android.support.annotation.NonNull;
-import android.support.v7.widget.RecyclerView;
+import androidx.annotation.NonNull;
+import androidx.recyclerview.widget.RecyclerView;
 
 /**
  * Stars. 2017
- *
  * @author Eduard Maximovich <edward.vstock@gmail.com>
  */
 public class SortableRow<V extends RecyclerView.ViewHolder, T extends CalendarAdapterContract.Row<V>> implements
         CalendarAdapterContract.Row<V> {
 
-    private T row;
-    private int position;
+    private final T row;
+    private final int position;
 
     public SortableRow(final T row, int position) {
         this.row = row;

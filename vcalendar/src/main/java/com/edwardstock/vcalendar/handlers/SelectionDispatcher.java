@@ -1,7 +1,5 @@
 package com.edwardstock.vcalendar.handlers;
 
-import android.support.annotation.IntRange;
-import android.support.annotation.NonNull;
 import android.view.View;
 
 import com.annimon.stream.Stream;
@@ -21,6 +19,9 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
 
+import androidx.annotation.IntRange;
+import androidx.annotation.NonNull;
+
 import static com.edwardstock.vcalendar.common.Preconditions.checkNotNull;
 
 /**
@@ -32,12 +33,12 @@ public final class SelectionDispatcher implements OnDayClickListener {
     //    private final Consumer<List<CalendarDay>> mSelections;
     private final Delegate mDelegate;
     short selectionClickCount = 0;
-    private List<CalendarDay> mSelections = new ArrayList<>();
+    private final List<CalendarDay> mSelections = new ArrayList<>();
     private DateTime mDisabledBeforeDate;
     private DateTime mDisabledAfterDate;
     private int mLimit = 0;
-    private Map<Integer, BaseHandler> mHandlers = new HashMap<>();
-    private List<OnSelectionListener> mOnSelectionListeners = new ArrayList<>();
+    private final Map<Integer, BaseHandler> mHandlers = new HashMap<>();
+    private final List<OnSelectionListener> mOnSelectionListeners = new ArrayList<>();
     private int mMode;
     private boolean mContinuousSelection = true;
     private boolean mClickable = true;

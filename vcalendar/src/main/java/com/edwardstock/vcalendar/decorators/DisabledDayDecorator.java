@@ -1,7 +1,6 @@
 package com.edwardstock.vcalendar.decorators;
 
 import android.content.Context;
-import android.support.annotation.ColorRes;
 
 import com.annimon.stream.Stream;
 import com.edwardstock.vcalendar.R;
@@ -14,9 +13,10 @@ import org.joda.time.DateTime;
 import java.lang.ref.WeakReference;
 import java.util.List;
 
+import androidx.annotation.ColorRes;
+
 /**
  * vcalendarapp. 2018
- *
  * @author Eduard Maximovich <edward.vstock@gmail.com>
  */
 public class DisabledDayDecorator implements DayDecorator {

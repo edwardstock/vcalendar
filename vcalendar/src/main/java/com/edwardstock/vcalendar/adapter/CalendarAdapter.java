@@ -1,9 +1,5 @@
 package com.edwardstock.vcalendar.adapter;
 
-import android.support.annotation.LayoutRes;
-import android.support.annotation.NonNull;
-import android.support.v4.util.SimpleArrayMap;
-import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -18,6 +14,10 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
+import androidx.annotation.LayoutRes;
+import androidx.annotation.NonNull;
+import androidx.collection.SimpleArrayMap;
+import androidx.recyclerview.widget.RecyclerView;
 import timber.log.Timber;
 
 import static com.edwardstock.vcalendar.common.Preconditions.checkNotNull;
@@ -212,7 +212,7 @@ public final class CalendarAdapter extends RecyclerView.Adapter<RecyclerView.Vie
         holderClass = holderViewIdClassCache.get(viewId);
         if (holderClass == null) {
             throw new RuntimeException(
-                    "Can't findStream ViewHolder for view " + String.valueOf(viewId));
+                    "Can't findStream ViewHolder for view " + viewId);
         }
         if (isInnerClass(holderClass)) {
             throw new RuntimeException("Class should be static!");

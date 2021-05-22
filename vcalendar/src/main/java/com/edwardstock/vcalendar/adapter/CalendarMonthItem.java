@@ -2,10 +2,6 @@ package com.edwardstock.vcalendar.adapter;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
-import android.support.annotation.NonNull;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.SimpleItemAnimator;
 import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -21,9 +17,13 @@ import java.lang.ref.WeakReference;
 import java.util.Arrays;
 import java.util.Calendar;
 
+import androidx.annotation.NonNull;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+import androidx.recyclerview.widget.SimpleItemAnimator;
+
 /**
  * vcalendar. 2018
- *
  * @author Eduard Maximovich <edward.vstock@gmail.com>
  */
 public class CalendarMonthItem implements CalendarAdapterContract.Row<CalendarMonthItem.ViewHolder> {

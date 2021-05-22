@@ -5,19 +5,49 @@ apply plugin: 'com.jfrog.artifactory'
 
 ext {
     group "com.edwardstock.android"
-    version "1.2.0"
+    version vcalVersionName
+
+    buildArtifactName = project.name
+    buildArtifactVersion = version
+    buildArtifactGroup = group
+
+    pomName = "VCalendar"
+    pomUrl = "https://github.com/edwardstock/vcalendar"
+    pomScm = {
+        connection = "scm:git:git://github.com/edwardstock/vcalendar.git"
+        url = pomUrl
+    }
+    pomInceptionYear = "2018"
+    pomContributors = {}
+    pomDescription = "Advanced Android RecyclerView infinite calendar view"
+    pomDevelopers = {
+        developer {
+            id = "edwardstock"
+            name = "Eduard Maximovich"
+            email = "edwatd.vstock@gmail.com"
+            roles = ["maintainer"]
+            timezone = "Europe/Moscow"
+        }
+    }
+    pomLicenses = {
+        license {
+            name = "MIT License"
+            url = "https://opensource.org/licenses/MIT"
+            distribution = "repo"
+        }
+    }
 }
 
 android {
-    compileSdkVersion 27
+    compileSdkVersion vcalMaxSdk
 
     defaultConfig {
-        minSdkVersion 18
-        targetSdkVersion 27
+        minSdkVersion vcalMinSdk
+        targetSdkVersion vcalMaxSdk
         versionCode 3
-        versionName "1.2.0"
+        versionName vcalVersionName
 
-        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
 
     buildTypes {
@@ -39,23 +69,21 @@ android {
     }
 }
 
-ext.libSupport = "27.1.1"
-
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
 
-    implementation "com.android.support:appcompat-v7:${libSupport}"
-    implementation "com.android.support:recyclerview-v7:${libSupport}"
-    implementation 'com.jakewharton.timber:timber:4.5.1'
+    implementation 'androidx.appcompat:appcompat:1.1.0'
+    implementation 'androidx.recyclerview:recyclerview:1.1.0'
+    implementation 'com.jakewharton.timber:timber:4.7.1'
     implementation 'net.danlew:android.joda:2.9.9.1'
     implementation('com.fatboyindustrial.gson-jodatime-serialisers:gson-jodatime-serialisers:1.6.0') {
         exclude group: 'joda-time'
         exclude group: 'com.google.code.gson'
     }
-    implementation 'com.annimon:stream:1.1.9'
+    implementation 'com.annimon:stream:1.2.1'
     testImplementation 'junit:junit:4.12'
-    androidTestImplementation 'com.android.support.test:runner:1.0.2'
-    androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
+    androidTestImplementation 'androidx.test.ext:junit:1.1.1'
+    androidTestImplementation 'androidx.test.espresso:espresso-core:3.2.0'
 }
 
-apply from: '../bintray_publish.gradle'
+apply from: '../scripts/maven_publish.gradle'

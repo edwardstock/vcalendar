@@ -1,13 +1,12 @@
 package com.edwardstock.vcalendar.adapter;
 
-import android.support.annotation.IntDef;
-
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
+import androidx.annotation.IntDef;
+
 /**
  * vcalendarapp. 2018
- *
  * @author Eduard Maximovich <edward.vstock@gmail.com>
  */
 @IntDef({

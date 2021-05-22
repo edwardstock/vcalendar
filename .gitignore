@@ -15,13 +15,12 @@ gen/
 #idea files
 *.iml
 .idea/
+!.idea/codeStyles
 
 # Gradle files
 .gradle/
 build/
 
-
-gradle/**
 
 # Local configuration file (sdk path, etc)
 local.properties

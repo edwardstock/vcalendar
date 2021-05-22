@@ -1,9 +1,5 @@
 package com.edwardstock.vcalendar;
 
-import android.support.annotation.DrawableRes;
-import android.support.annotation.LayoutRes;
-import android.support.annotation.NonNull;
-
 import com.edwardstock.vcalendar.decorators.DayDecorator;
 import com.edwardstock.vcalendar.handlers.SelectionDispatcher;
 import com.edwardstock.vcalendar.models.CalendarDay;
@@ -12,9 +8,12 @@ import org.joda.time.DateTime;
 
 import java.util.Set;
 
+import androidx.annotation.DrawableRes;
+import androidx.annotation.LayoutRes;
+import androidx.annotation.NonNull;
+
 /**
  * vcalendar. 2018
- *
  * @author Eduard Maximovich <edward.vstock@gmail.com>
  */
 public interface CalendarHandler {

@@ -2,22 +2,22 @@ package com.edwardstock.vcalendar.adapter;
 
 import android.content.res.ColorStateList;
 import android.graphics.drawable.Drawable;
-import android.support.annotation.ColorInt;
-import android.support.annotation.ColorRes;
-import android.support.annotation.DrawableRes;
 import android.widget.TextView;
 
 import com.edwardstock.vcalendar.R;
 
 import java.lang.ref.WeakReference;
 
+import androidx.annotation.ColorInt;
+import androidx.annotation.ColorRes;
+import androidx.annotation.DrawableRes;
+
 /**
  * vcalendarapp. 2018
- *
  * @author Eduard Maximovich <edward.vstock@gmail.com>
  */
 public class DayViewFacade {
-    private WeakReference<TextView> mView;
+    private final WeakReference<TextView> mView;
 
     public DayViewFacade(final TextView view) {
         mView = new WeakReference<>(view);

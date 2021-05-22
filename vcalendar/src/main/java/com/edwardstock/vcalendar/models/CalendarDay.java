@@ -1,28 +1,28 @@
 package com.edwardstock.vcalendar.models;
 
 import android.annotation.SuppressLint;
-import android.support.annotation.NonNull;
 
 import org.joda.time.DateTime;
 import org.joda.time.Duration;
 
+import androidx.annotation.NonNull;
+
 /**
  * vcalendar. 2018
- *
  * @author Eduard Maximovich <edward.vstock@gmail.com>
  */
 public class CalendarDay implements Comparable<CalendarDay> {
-	private DateTime mDateTime;
+    private final DateTime mDateTime;
     private boolean mSelected;
     private int mState;
 
     public CalendarDay(DateTime dt) {
-		mDateTime = dt;
-	}
+        mDateTime = dt;
+    }
 
-	@SuppressLint("DefaultLocale")
-	@Override
-	public String toString() {
+    @SuppressLint("DefaultLocale")
+    @Override
+    public String toString() {
 		return String.format("CalendarDay{num=%02d, month=%02d, year=%04d, selected=%b}", getDay(), mDateTime.getMonthOfYear(), mDateTime.getYear(), isSelected());
 	}
 

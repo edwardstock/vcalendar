@@ -1,7 +1,6 @@
 package com.edwardstock.vcalendar.decorators;
 
 import android.content.Context;
-import android.support.annotation.IntDef;
 
 import com.edwardstock.vcalendar.R;
 import com.edwardstock.vcalendar.adapter.DayViewFacade;
@@ -12,6 +11,8 @@ import org.joda.time.DateTime;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.ref.WeakReference;
+
+import androidx.annotation.IntDef;
 
 import static com.edwardstock.vcalendar.decorators.DisabledRangeDayDecorator.RangeMode.AFTER;
 import static com.edwardstock.vcalendar.decorators.DisabledRangeDayDecorator.RangeMode.BEFORE;
@@ -25,7 +26,7 @@ public class DisabledRangeDayDecorator implements DayDecorator {
     private final WeakReference<Context> mContext;
     private final DateTime mInitial;
     @RangeMode
-    private int mMode;
+    private final int mMode;
 
     public DisabledRangeDayDecorator(Context context, @RangeMode int mode, DateTime initial) {
         mContext = new WeakReference<>(context);

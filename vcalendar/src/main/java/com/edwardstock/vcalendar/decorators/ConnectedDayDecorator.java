@@ -1,9 +1,9 @@
 package com.edwardstock.vcalendar.decorators;
 
-import android.support.annotation.DrawableRes;
-
 import com.edwardstock.vcalendar.adapter.DayViewFacade;
 import com.edwardstock.vcalendar.models.CalendarDay;
+
+import androidx.annotation.DrawableRes;
 
 import static com.edwardstock.vcalendar.adapter.Neighbourhood.IS_BEGIN;
 import static com.edwardstock.vcalendar.adapter.Neighbourhood.IS_END;

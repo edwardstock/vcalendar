@@ -1,7 +1,6 @@
 package com.edwardstock.vcalendarapp;
 
 import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
 
 import com.edwardstock.vcalendar.VCalendar;
 import com.edwardstock.vcalendar.adapter.DayViewFacade;
@@ -12,6 +11,8 @@ import org.joda.time.DateTime;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import androidx.appcompat.app.AppCompatActivity;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -67,7 +68,7 @@ public class MainActivity extends AppCompatActivity {
 
     public final static class CustomDecorator extends ConnectedDayDecorator {
 
-        private DateTime mShouldDate;
+        private final DateTime mShouldDate;
 
         CustomDecorator(DateTime dt) {
             mShouldDate = dt;

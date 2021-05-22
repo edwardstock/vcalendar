@@ -2,10 +2,6 @@ package com.edwardstock.vcalendar.adapter;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-import android.support.v4.util.ArrayMap;
-import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -22,6 +18,10 @@ import org.joda.time.DateTime;
 import java.lang.ref.WeakReference;
 import java.util.Map;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.collection.ArrayMap;
+import androidx.recyclerview.widget.RecyclerView;
 import timber.log.Timber;
 
 import static com.edwardstock.vcalendar.adapter.Neighbourhood.IS_BEGIN;
@@ -40,9 +40,9 @@ public class DaysAdapter extends RecyclerView.Adapter<DaysAdapter.WeekHolder> {
     private final DefaultDayDecorator mDefaultDayDecorator = new DefaultDayDecorator();
     private LayoutInflater mInflater;
     private WeakReference<Context> mContext;
-    private WeakReference<CalendarHandler> mCalendarHandler;
+    private final WeakReference<CalendarHandler> mCalendarHandler;
     private DayItemClickedListener mDayItemClickedListener;
-    private Map<Integer, DayIndex> mDayIndex = new ArrayMap<>();
+    private final Map<Integer, DayIndex> mDayIndex = new ArrayMap<>();
 
     public DaysAdapter(@NonNull CalendarHandler calendarHandler,
                        @NonNull final CalendarDay[][] weeksDays) {

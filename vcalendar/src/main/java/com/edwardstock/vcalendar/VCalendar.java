@@ -3,14 +3,6 @@ package com.edwardstock.vcalendar;
 import android.annotation.TargetApi;
 import android.content.Context;
 import android.content.res.TypedArray;
-import android.support.annotation.ArrayRes;
-import android.support.annotation.DrawableRes;
-import android.support.annotation.IntRange;
-import android.support.annotation.LayoutRes;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
 import android.util.AttributeSet;
 import android.view.View;
 import android.view.ViewTreeObserver;
@@ -44,6 +36,14 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
+import androidx.annotation.ArrayRes;
+import androidx.annotation.DrawableRes;
+import androidx.annotation.IntRange;
+import androidx.annotation.LayoutRes;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 import timber.log.Timber;
 
 /**
@@ -59,39 +59,39 @@ public class VCalendar extends FrameLayout implements CalendarHandler {
 	private String[] mDaysOfWeek;
 
 	@DrawableRes
-	private int mSelectedMiddleBackgroundRes;
-	@DrawableRes
-	private int mSelectedEndBackgroundRes;
-	@DrawableRes
-	private int mSelectedSingleBackgroundRes;
-	@DrawableRes
-	private int mSelectedBeginBackgroundRes;
-	private int mOrientation = LinearLayoutManager.VERTICAL;
-	private RecyclerView mList;
-	private CalendarAdapter mAdapter;
-	private Map<DateTime, CalendarDay> mDayMap = new HashMap<>();
-	private int mFutureMonth = 0;
-	private int mPastMonth = 0;
-	private DateTime mInitial;
-	private Map<YearMonth, CalendarMonthItem> mRowMap = new HashMap<>();
-	private Set<DayDecorator> mDayDecorators = new LinkedHashSet<>();
-	private List<OnDayClickListener> mOnDayClickListeners = new ArrayList<>();
-	private DateTime mMinDate;
-	private DateTime mMaxDate;
-	private boolean mEnableLegend;
-	private List<OnMonthAddListener> mMonthListeners = new ArrayList<>();
-	private List<CalendarMonthItem.OnBindListener> mOnMonthBindListeners = new ArrayList<>();
-	private List<CalendarMonthItem.OnUnbindListener> mOnMonthUnbindListeners = new ArrayList<>();
-	private LinearLayoutManager mLayoutManager;
-	private SelectionDispatcher mSelectionDispatcher;
-	private boolean mEnableDefaultDecorator;
-	private boolean mMinDateCut = false;
-	private boolean mMaxDateCut = false;
-	private int mWeekLayoutRes = R.layout.item_week;
+    private int mSelectedMiddleBackgroundRes;
+    @DrawableRes
+    private int mSelectedEndBackgroundRes;
+    @DrawableRes
+    private int mSelectedSingleBackgroundRes;
+    @DrawableRes
+    private int mSelectedBeginBackgroundRes;
+    private int mOrientation = LinearLayoutManager.VERTICAL;
+    private RecyclerView mList;
+    private CalendarAdapter mAdapter;
+    private final Map<DateTime, CalendarDay> mDayMap = new HashMap<>();
+    private int mFutureMonth = 0;
+    private int mPastMonth = 0;
+    private DateTime mInitial;
+    private final Map<YearMonth, CalendarMonthItem> mRowMap = new HashMap<>();
+    private final Set<DayDecorator> mDayDecorators = new LinkedHashSet<>();
+    private final List<OnDayClickListener> mOnDayClickListeners = new ArrayList<>();
+    private DateTime mMinDate;
+    private DateTime mMaxDate;
+    private boolean mEnableLegend;
+    private final List<OnMonthAddListener> mMonthListeners = new ArrayList<>();
+    private final List<CalendarMonthItem.OnBindListener> mOnMonthBindListeners = new ArrayList<>();
+    private final List<CalendarMonthItem.OnUnbindListener> mOnMonthUnbindListeners = new ArrayList<>();
+    private LinearLayoutManager mLayoutManager;
+    private SelectionDispatcher mSelectionDispatcher;
+    private boolean mEnableDefaultDecorator;
+    private boolean mMinDateCut = false;
+    private boolean mMaxDateCut = false;
+    private int mWeekLayoutRes = R.layout.item_week;
 
-	public VCalendar(@NonNull Context context) {
-		super(context);
-	}
+    public VCalendar(@NonNull Context context) {
+        super(context);
+    }
 
 	public VCalendar(@NonNull Context context, @Nullable AttributeSet attrs) {
 		super(context, attrs);
