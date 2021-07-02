@@ -20,13 +20,13 @@ allprojects {
 ```groovy
 // in project module
 dependencies {
-    implementation 'com.edwardstock.android:vcalendar:1.2.0'
+    implementation 'com.edwardstock.android:vcalendar:1.3.1'
 }
 ```
 
 If you already have android implementation of JodaTime, and/or probably you have error "Program type already present: org.joda.time.Chronology" or something like this, than add instead this lines:
 ```groovy
-implementation ('com.edwardstock.android:vcalendar:1.2.0') {
+implementation ('com.edwardstock.android:vcalendar:1.3.1') {
     exclude group: 'joda-time'
 }
 ```

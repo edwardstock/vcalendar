@@ -730,7 +730,8 @@ public class VCalendar extends FrameLayout implements CalendarHandler {
 
 		callOnMonthAddListeners(initialMonth);
 
-		if (mList.getHeight() > 0 && mList.getChildCount() > 0) {
+
+        if (mList.getHeight() > 0 && mList.getChildCount() > 0) {
 			initListPreDraw();
 		} else {
 			mList.getViewTreeObserver().addOnPreDrawListener(

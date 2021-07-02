@@ -28,5 +28,5 @@ task clean(type: Delete) {
 ext {
     vcalMaxSdk = 30
     vcalMinSdk = 18
-    vcalVersionName = "1.3.0"
+    vcalVersionName = "1.3.1"
 }

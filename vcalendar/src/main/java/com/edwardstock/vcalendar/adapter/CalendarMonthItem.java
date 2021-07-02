@@ -11,6 +11,7 @@ import com.edwardstock.vcalendar.R;
 import com.edwardstock.vcalendar.models.CalendarDay;
 
 import org.joda.time.DateTime;
+import org.joda.time.DateTimeConstants;
 import org.joda.time.YearMonth;
 
 import java.lang.ref.WeakReference;
@@ -42,7 +43,8 @@ public class CalendarMonthItem implements CalendarAdapterContract.Row<CalendarMo
         cal.set(Calendar.MONTH, month.getMonthOfYear() - 1);
         cal.set(Calendar.YEAR, month.getYear());
         cal.set(Calendar.DAY_OF_MONTH, month.dayOfMonth().withMaximumValue().getDayOfMonth());
-        int weeksInMonth = cal.getActualMaximum(Calendar.WEEK_OF_MONTH);
+        int weeksInMonth = calcAllWeeksInMonth(month);
+
 
         int fromWeek = 0;
         int toWeek = weeksInMonth;
@@ -95,6 +97,29 @@ public class CalendarMonthItem implements CalendarAdapterContract.Row<CalendarMo
 
         mDaysAdapter = new DaysAdapter(calendarHandler, weeksDaysWithOffset);
         mDaysAdapter.setOnDayItemClickListener(dayItemClickedListener);
+    }
+
+    private int calcAllWeeksInMonth(DateTime month) {
+        DateTime last = month.withDayOfMonth(month.dayOfMonth().withMaximumValue().getDayOfMonth());
+        int totalWeeks = 0;
+        for (int d = 1; d <= last.getDayOfMonth(); d++) {
+            boolean isMonday = month.withDayOfMonth(d).getDayOfWeek() == DateTimeConstants.MONDAY;
+
+            // if first day of month is monday
+            if (totalWeeks == 0 && isMonday) {
+                totalWeeks++;
+            }
+            // if not first day of month and it's monday
+            else if (totalWeeks != 0 && isMonday) {
+                totalWeeks++;
+            }
+            // if first day of month is not monday
+            else if (totalWeeks == 0) {
+                totalWeeks++;
+            }
+        }
+
+        return totalWeeks;
     }
 
     @Override
